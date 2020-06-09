@@ -22,19 +22,6 @@ lend() {
   becho "${LINE}\nEND: $1\n"
 }
 
-for var in "$@"
-do
-  if [ $var == '-php' ]
-  then
-    DO_PHP=true
-  fi
-
-  if [ $var == '-docker' ]
-  then
-    DO_DOCKER=true
-  fi
-done
-
 echo -e " "
 
 # Install Development Tools
@@ -56,12 +43,13 @@ if [ -f /usr/bin/rsync ]; then
     lstart "Installing Dot Files..."
     shopt -s dotglob
     rsync --exclude ".git/" \
+      --exclude "chromeos" \
       --exclude "bootstrap.sh" \
       --exclude ".gitignore" \
       --exclude "functions/" \
       --exclude "README.md" \
       --exclude "LICENSE" \
-      -avP --no-perms ./.* ~/;
+      -avP --no-perms .* ~/;
     lend "Installing Dot Files"
   fi
 fi
@@ -79,7 +67,7 @@ fi
 
 # Install PHPStorm
 if [ ! -f /opt/PhpStorm-*/bin/phpstorm.sh ]; then
-  if ask "Install VSCode?" Y; then
+  if ask "Install PhpStorm?" Y; then
     lstart "Installing PHPStorm..."
     curl -L "https://download.jetbrains.com/webide/PhpStorm-${PHPSTORM_VER}.tar.gz" > PhpStorm.tar.gz
     tar xzf ./PhpStorm.tar.gz -C /opt
