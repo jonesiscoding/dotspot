@@ -104,7 +104,7 @@ function doPleasing() {
   lend "Installing Pleasing"
 }
 
-function installPhpAddons() {
+function includePhpAddons() {
   if ask "Install COMPOSER, BOX, and PLEASING?" Y; then
     # Make sure directory exists
     mkdir -p ${LOCAL_BIN}

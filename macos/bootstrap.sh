@@ -3,6 +3,7 @@
 source "../shared/sbin/versions.sh"
 source "../shared/sbin/functions.sh"
 
+# Establish installation locations if there aren't already environment variables
 if [ -z "${LOCAL_BIN}" ]; then
   LOCAL_BIN=~/.local/bin
 fi
@@ -10,41 +11,17 @@ if [ -z "${LOCAL_SBIN}" ]; then
   LOCAL_SBIN=~/.local/sbin
 fi
 
+# Status variables used later
 STATUS_DEV=false
 STATUS_DOT=false
 
+# Start off with a blank line
 echo -e " "
 
-# Install Composer
-if ask "Install COMPOSER, BOX, and PLEASING?" Y; then
-  # Make sure directory exists
-  mkdir -p ${LOCAL_BIN}
-  # Install Composer
-  if [ ! -f "${LOCAL_BIN}/composer" ]; then
-    doComposer
-  else
-    if ask "  Replace existing Composer binary?" Y; then
-      doComposer
-    fi
-  fi
-  # Install Box
-  if [ ! -f "${LOCAL_BIN}/box" ]; then
-    doBox
-  else
-    if ask "  Replace existing Box binary?" Y; then
-      doBox
-    fi
-  fi
-  # Install Pleasing
-  if [ ! -f "${LOCAL_BIN}/pleasing" ]; then
-    doPleasing
-  else
-    if ask "  Replace existing Pleasing binary?" Y; then
-      doPleasing
-    fi
-  fi
-fi
+# Prompt for installation of Composer, Box, Pleasing
+includePhpAddons
 
+# Prompt for installation of Docker Compose Helper
 if ask "Install Docker Compose Utility?" Y; then
   # Make sure directory exists
   mkdir -p ${LOCAL_SBIN}

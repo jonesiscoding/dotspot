@@ -103,18 +103,11 @@ if ask "Install PHP and NPM?" Y; then
     php${PHP_VER} php${PHP_VER}-{bcmath,cli,common,curl,dev,exif,gd,intl,mbstring,mysql,opcache,sqlite3,xml,zip} php-pear php-imagick
   pecl install APCu-5.1.17
   locale-gen en_US.UTF-8 && locale-gen en_US
-  # Install Box
-  BOX_FILE=$(mktemp)
-  curl -o "$BOX_FILE" -SL "${BOXURL}"
-  mkdir -p /usr/local/bin/
-  mv ${BOX_FILE} /usr/local/bin/box; chmod 755 /usr/local/bin/box
-  # Install Pleasing
-  PLEASING_FILE=$(mktemp)
-  curl -o "$PLEASING_FILE" -SL "${PLEASINGURL}"
-  mv ${PLEASING_FILE} /usr/local/bin/pleasing
-  chmod 755 /usr/local/bin/pleasing
   becho "\nEND: Installing PHP"
 fi
+
+# Prompt for installation of Composer, Box, Pleasing
+includePhpAddons
 
 if [ -f ~/.bash_profile ]; then
   source ~/.bash_profile
