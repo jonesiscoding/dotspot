@@ -1,18 +1,12 @@
 #!/bin/bash
 
-source "./sbin/functions.sh"
-source "./sbin/versions.sh"
+source "../shared/sbin/functions.sh"
+source "../shared/sbin/versions.sh"
 
 LINE="-----------------------------------------"
 
 STATUS_DEV=false
 STATUS_DOT=false
-
-DO_PHP=false
-DO_DOCKER=false
-
-BOXURL=https://github.com/humbug/box/releases/download/${BOXVERSION}/box.phar
-PLEASINGURL=https://github.com/jonesiscoding/pleasing-tools/releases/download/v${PLEASINGVERSION}/pleasing.phar
 
 lstart() {
   becho "START: $1\n${LINE}"
@@ -55,7 +49,7 @@ if [ -f /usr/bin/rsync ]; then
 fi
 
 # Install VS Code
-if [ ! -f /usr/bin/code ]; then
+if [ ! -f /usr/bin/code ] || [ "${1}" == "--force" ]; then
   if ask "Install VSCode?" Y; then
     lstart "Installing VS Code..."
     curl -L "https://go.microsoft.com/fwlink/?LinkID=760868" > vscode.deb

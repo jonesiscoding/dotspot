@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source "./sbin/functions.sh"
-source "./sbin/versions.sh"
+source "../shared/sbin/functions.sh"
+source "../shared/sbin/versions.sh"
 
 if [ -z "${LOCAL_BIN}" ]; then
   LOCAL_BIN=~/.local/bin
