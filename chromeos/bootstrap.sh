@@ -1,20 +1,11 @@
 #!/bin/bash
 
-source "../shared/sbin/functions.sh"
 source "../shared/sbin/versions.sh"
-
-LINE="-----------------------------------------"
+source "../shared/sbin/functions.sh"
 
 STATUS_DEV=false
 STATUS_DOT=false
-
-lstart() {
-  becho "START: $1\n${LINE}"
-}
-
-lend() {
-  becho "${LINE}\nEND: $1\n"
-}
+LOCAL_BIN="/usr/local/bin"
 
 echo -e " "
 
@@ -37,13 +28,18 @@ if [ -f /usr/bin/rsync ]; then
     lstart "Installing Dot Files..."
     shopt -s dotglob
     rsync --exclude ".git/" \
+      --exclude "macos" \
+      --exclude "shared" \
       --exclude "chromeos" \
+      --exclude "vscode" \
+      --exclude "brew.sh" \
+      --exclude ".dotbkup" \
       --exclude "bootstrap.sh" \
-      --exclude ".gitignore" \
+      --exclude "/.gitignore" \
       --exclude "functions/" \
       --exclude "README.md" \
       --exclude "LICENSE" \
-      -avP --no-perms .* ~/;
+      -avP --no-perms ./.* ~/;
     lend "Installing Dot Files"
   fi
 fi

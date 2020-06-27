@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source "../shared/sbin/functions.sh"
 source "../shared/sbin/versions.sh"
+source "../shared/sbin/functions.sh"
 
 if [ -z "${LOCAL_BIN}" ]; then
   LOCAL_BIN=~/.local/bin
@@ -10,18 +10,8 @@ if [ -z "${LOCAL_SBIN}" ]; then
   LOCAL_SBIN=~/.local/sbin
 fi
 
-LINE="-----------------------------------------"
-
 STATUS_DEV=false
 STATUS_DOT=false
-
-lstart() {
-  becho "\nSTART: $1\n${LINE}"
-}
-
-lend() {
-  becho "${LINE}\nEND: $1\n"
-}
 
 echo -e " "
 

@@ -20,6 +20,14 @@ becho() {
   echo -e "${lightblueb}${1}${end}";
 }
 
+lstart() {
+  becho "\nSTART: $1\n${LINE}"
+}
+
+lend() {
+  becho "${LINE}\nEND: $1\n"
+}
+
 indent() { sed 's/^/  /'; }
 
 # This is a general-purpose function to ask Yes/No questions in Bash, either
@@ -94,4 +102,35 @@ function doPleasing() {
   mv ${PLEASING_FILE} ${LOCAL_BIN}/pleasing
   chmod 755 ${LOCAL_BIN}/pleasing
   lend "Installing Pleasing"
+}
+
+function installPhpAddons() {
+  if ask "Install COMPOSER, BOX, and PLEASING?" Y; then
+    # Make sure directory exists
+    mkdir -p ${LOCAL_BIN}
+    # Install Composer
+    if [ ! -f "${LOCAL_BIN}/composer" ]; then
+      doComposer
+    else
+      if ask "  Replace existing Composer binary?" Y; then
+        doComposer
+      fi
+    fi
+    # Install Box
+    if [ ! -f "${LOCAL_BIN}/box" ]; then
+      doBox
+    else
+      if ask "  Replace existing Box binary?" Y; then
+        doBox
+      fi
+    fi
+    # Install Pleasing
+    if [ ! -f "${LOCAL_BIN}/pleasing" ]; then
+      doPleasing
+    else
+      if ask "  Replace existing Pleasing binary?" Y; then
+        doPleasing
+      fi
+    fi
+  fi
 }
