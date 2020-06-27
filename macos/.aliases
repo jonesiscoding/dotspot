@@ -115,7 +115,6 @@ alias afk="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resource
 alias reload="exec ${SHELL} -l"
 
 # Print each PATH entry on a separate line
-if [ -f ]
 alias path='echo -e ${PATH//:/\n}'
 
 # Sublime
