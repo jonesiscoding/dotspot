@@ -123,8 +123,8 @@ if [ -f "/Applications/Sublime\ Text.app" ]; then
 fi
 
 # Adobe Application
-if [ -n ${VERSION_INDESIGN} ]; then
-	if [ ${VERSION_INDESIGN} == 2020 ]; then
+if [ ! -z "${VERSION_INDESIGN}" ]; then
+	if [ "${VERSION_INDESIGN}" == "2020" ]; then
 		if [ -d "/Applications/Adobe InDesign 2020" ]; then
 			alias aid="open -a /Applications/Adobe\ InDesign\ 2020/Adobe\ InDesign\ 2020.app"
 		fi
@@ -135,8 +135,8 @@ if [ -n ${VERSION_INDESIGN} ]; then
 	fi
 fi
 
-if [ -n ${VERSION_ILLUSTRATOR} ]; then
-	if [ ${VERSION_ILLUSTRATOR} == 2020 ]; then
+if [ ! -z "${VERSION_ILLUSTRATOR}" ]; then
+	if [ "${VERSION_ILLUSTRATOR}" == "2020" ]; then
 		if [ -d "/Applications/Adobe Illustrator 2020" ]; then
 			alias ail="open -a /Applications/Adobe\ Illustrator\ 2020/Adobe\ Illustrator\ 2020.app"
 		fi
@@ -147,8 +147,8 @@ if [ -n ${VERSION_ILLUSTRATOR} ]; then
 	fi
 fi
 
-if [ -n ${VERSION_PHOTOSHOP} ]; then
-	if [ ${VERSION_PHOTOSHOP} == 2020 ]; then
+if [ ! -z "${VERSION_PHOTOSHOP}" ]; then
+	if [ "${VERSION_PHOTOSHOP}" == "2020" ]; then
 		if [ -d "/Applications/Adobe Photoshop 2020" ]; then
 			alias aps="open -a /Applications/Adobe\ Photoshop\ 2020/Adobe\ Photoshop\ 2020.app"
 		fi
