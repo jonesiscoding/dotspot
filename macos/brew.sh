@@ -12,7 +12,7 @@ brew upgrade
 BREW_PREFIX=$(brew --prefix)
 
 brew install bash-completion2
-brew install imagemagick --with-webp
+brew install imagemagick
 
 # Remove outdated versions from the cellar.
 brew cleanup
