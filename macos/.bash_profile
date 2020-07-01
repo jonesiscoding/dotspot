@@ -5,13 +5,13 @@ if [ -z "${LOCAL_BIN}" ]; then
 fi
 if [ -z "${LOCAL_SBIN}" ]; then
   export LOCAL_SBIN=$HOME/.local/sbin
-	export PATH="$LOCAL_SBIN:$PATH";
+  export PATH="$LOCAL_SBIN:$PATH";
 fi
 
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
 # * ~/.extra can be used for other settings you don’t want to commit.
-for file in ~/.{path,exports,extra,aliases,functions}; do
+for file in $HOME/.{path,exports,extra,aliases,functions}; do
 	[ -r "$file" ] && [ -f "$file" ] && source "$file";
 done;
 unset file;
