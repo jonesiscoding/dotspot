@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
-# Install command-line tools using Homebrew.
+source "../shared/sbin/versions.sh"
+source "../shared/sbin/functions.sh"
+
+PACKAGES=("bash-completion2")
+
+lstart "Updating Homebrew"
 
 # Make sure we’re using the latest Homebrew.
 brew update
@@ -11,12 +16,43 @@ brew upgrade
 # Save Homebrew’s installed location.
 BREW_PREFIX=$(brew --prefix)
 
-brew install bash-completion2
-brew install imagemagick
-brew install jhead
-brew install exiftool
-brew install ghostscript
-brew install jq
+lend "Updating Homebrew"
+echo ""
+
+# Ask About Packages
+if ask "Install ImageMagick?" Y; then
+ PACKAGES+=("imagemagick")
+fi
+
+if ask "Install GhostScript?" Y; then
+  PACKAGES+=("ghostscript")
+fi
+
+if ask "Install ExifTool?" Y; then
+  PACKAGES+=("exiftool")
+fi
+
+if ask "Install jhead Binary?" Y; then
+  PACKAGES+=("jhead")
+fi
+
+if ask "Install sassc Binary?" Y; then
+  PACKAGES+=("sassc")
+fi
+
+if ask "Install jq Binary?" Y; then
+  PACKAGES+=("jq")
+fi
+
+lstart "Installing Homebrew Packages"
+
+# Install Packages
+for PACKAGE in "${PACKAGES[@]}"
+do
+  brew install $PACKAGE
+done
 
 # Remove outdated versions from the cellar.
 brew cleanup
+
+lend "Installing Homebrew Packages"
