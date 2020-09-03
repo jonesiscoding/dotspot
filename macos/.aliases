@@ -117,12 +117,19 @@ alias reload="exec ${SHELL} -l"
 # Print each PATH entry on a separate line
 alias path='echo -e ${PATH//:/\n}'
 
+#### Application Specific Aliases
+
 # Sublime
-if [ -f "/Applications/Sublime\ Text.app" ]; then
-	alias subl="open -a /Applications/Sublime\ Text.app"
+if [ -f /Applications/Sublime\ Text.app/Contents/Info.plist ]; then
+  alias subl="open -a /Applications/Sublime\ Text.app"
 fi
 
-# Adobe Application
+# VSCode
+if [ -f /Applications/Visual\ Studio\ Code.app/Contents/Info.plist ]; then
+  alias code="open -a /Applications/Visual\ Studio\ Code.app"
+fi
+
+# Adobe Applications
 if [ ! -z "${VERSION_INDESIGN}" ]; then
 	if [ "${VERSION_INDESIGN}" == "2020" ]; then
 		if [ -d "/Applications/Adobe InDesign 2020" ]; then

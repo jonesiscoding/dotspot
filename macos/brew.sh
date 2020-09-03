@@ -13,6 +13,10 @@ BREW_PREFIX=$(brew --prefix)
 
 brew install bash-completion2
 brew install imagemagick
+brew install jhead
+brew install exiftool
+brew install ghostscript
+brew install jq
 
 # Remove outdated versions from the cellar.
 brew cleanup
