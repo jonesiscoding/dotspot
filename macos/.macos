@@ -1,16 +1,35 @@
 #!/usr/bin/env bash
 
-# ~/.macos — https://mths.be/macos
+### region ############################################ DocBlock
+#
+# @source https://mths.be/macos (Too Many To List)
+#
+#
+### endregion ######################################### DockBlock
+
+### region ############################################ Variables
+
+isSudoer=true
+[ "$1" == "--nosudo" ] && isSudoer=false
+
+### endregion ######################################### Variables
+
+### region ############################################ Prep
 
 # Close any open System Preferences panes, to prevent them from overriding
 # settings we’re about to change
 osascript -e 'tell application "System Preferences" to quit'
 
-# Ask for the administrator password upfront
-sudo -v
 
-# Keep-alive: update existing `sudo` time stamp until `.macos` has finished
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+if $isSudoer; then
+  # Ask for the administrator password upfront
+  sudo -v
+
+  # Keep-alive: update existing `sudo` time stamp until `.macos` has finished
+  while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+fi
+
+### endregion ######################################### Prep
 
 ### region ############################################ General UI/UX
 
@@ -76,20 +95,24 @@ defaults write NSGlobalDomain AppleMeasurementUnits -string "Inches"
 defaults write NSGlobalDomain AppleMetricUnits -bool false
 
 # Set the timezone; see `sudo systemsetup -listtimezones` for other values
-sudo systemsetup -settimezone "America/Chicago" > /dev/null
+if $isSudoer; then
+  sudo systemsetup -settimezone "America/Chicago" > /dev/null
+fi
 
 ### endregion ######################################### Locality
 
 ### region ############################################ Energy Saver
 
-# Enable lid wakeup
-sudo pmset -a lidwake 1
+if $isSudoer; then
+  # Enable lid wakeup
+  sudo pmset -a lidwake 1
 
-# Restart automatically on power loss
-sudo pmset -a autorestart 1
+  # Restart automatically on power loss
+  sudo pmset -a autorestart 1
 
-# Restart automatically if the computer freezes
-sudo systemsetup -setrestartfreeze on
+  # Restart automatically if the computer freezes
+  sudo systemsetup -setrestartfreeze on
+fi
 
 ### endregion ######################################### Energy Saver
 
@@ -113,7 +136,9 @@ defaults write com.apple.screencapture disable-shadow -bool true
 defaults write NSGlobalDomain AppleFontSmoothing -int 1
 
 # Enable HiDPI display modes (requires restart)
-sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
+if $isSudoer; then
+  sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
+fi
 
 ### endregion ######################################### Display
 
@@ -169,14 +194,16 @@ defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
 # Disable the warning before emptying the Trash
 defaults write com.apple.finder WarnOnEmptyTrash -bool false
 
-# Show the /Volumes folder
-sudo chflags nohidden /Volumes
-
 # Expand the following File Info panes:
 # “General”, “Open with”
 defaults write com.apple.finder FXInfoPanesExpanded -dict \
 	General -bool true \
 	OpenWith -bool true \
+
+# Show the /Volumes folder
+if $isSudoer; then
+  sudo chflags nohidden /Volumes
+fi
 
 ### endregion ######################################### Finder & Time Machine
 
@@ -213,15 +240,10 @@ defaults write com.apple.dock showhidden -bool true
 defaults write com.apple.dock show-recents -bool false
 
 # Add iOS & Watch Simulator to Launchpad
-if [ -f "/Applications/Xcode.app" ]; then 
+if $isSudoer && [ -f "/Applications/Xcode.app" ]; then
   sudo ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app" "/Applications/Simulator.app"
   sudo ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator (Watch).app" "/Applications/Simulator (Watch).app"
 fi
-
-# Add a spacer to the left side of the Dock (where the applications are)
-#defaults write com.apple.dock persistent-apps -array-add '{tile-data={}; tile-type="spacer-tile";}'
-# Add a spacer to the right side of the Dock (where the Trash is)
-#defaults write com.apple.dock persistent-others -array-add '{tile-data={}; tile-type="spacer-tile";}'
 
 # Hot corners
 # Possible values:
@@ -287,16 +309,11 @@ defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true
 
 # Disable Spotlight indexing for any volume that gets mounted and has not yet
 # been indexed before.
-# Use `sudo mdutil -i off "/Volumes/foo"` to stop indexing any volume.
-sudo defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
+if $isSudoer; then
+  sudo defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
+fi
+
 # Change indexing order and disable some search results
-# Yosemite-specific search results (remove them if you are using macOS 10.9 or older):
-# 	MENU_DEFINITION
-# 	MENU_CONVERSION
-# 	MENU_EXPRESSION
-# 	MENU_SPOTLIGHT_SUGGESTIONS (send search queries to Apple)
-# 	MENU_WEBSEARCH             (send search queries to Apple)
-# 	MENU_OTHER
 defaults write com.apple.spotlight orderedItems -array \
 	'{"enabled" = 1;"name" = "APPLICATIONS";}' \
 	'{"enabled" = 1;"name" = "SYSTEM_PREFS";}' \
@@ -322,10 +339,13 @@ defaults write com.apple.spotlight orderedItems -array \
 	'{"enabled" = 0;"name" = "MENU_SPOTLIGHT_SUGGESTIONS";}'
 # Load new settings before rebuilding the index
 killall mds > /dev/null 2>&1
-# Make sure indexing is enabled for the main volume
-sudo mdutil -i on / > /dev/null
-# Rebuild the index from scratch
-sudo mdutil -E / > /dev/null
+
+if $isSudoer; then
+  # Make sure indexing is enabled for the main volume
+  sudo mdutil -i on / > /dev/null
+  # Rebuild the index from scratch
+  sudo mdutil -E / > /dev/null
+fi
 
 ### endregion ######################################### Spotlight
 
