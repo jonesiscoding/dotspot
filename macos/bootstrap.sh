@@ -69,23 +69,14 @@ if [ -f /usr/bin/rsync ]; then
   if ask "Install Dot Files?" Y; then
     # Backup DotFiles
     BKUP="$HOME/.dotbkup/$(date +"%Y%m%d")"
-    mkdir -p ${BKUP}
-    if [ -f $HOME/.gitattributes ]; then
-      cp $HOME/.gitattributes ${BKUP}/
-    fi
-    if [ -f $HOME/.gitconfig ]; then
-      cp $HOME/.gitconfig ${BKUP}/
-    fi
-    if [ -f $HOME/.gitignore ]; then
-      cp $HOME/.gitignore ${BKUP}/
-    fi
-    if [ -f $HOME/.bashrc ]; then 
-      cp $HOME/.bashrc ${BKUP}/
-    fi
-    if [ -f $HOME/.bash_profile ]; then 
-      cp $HOME/.bash_profile ${BKUP}/
-    fi
+    for file in $HOME/.{gitattributes,gitconfig,gitignore,bashrc,bash_profile}; do
+      [ ! -d "${BKUP}" ] && mkdir -p "${BKUP}"
+      if [ -f "$file" ]; then
+        cp "$file" "${BKUP}/"
+	    fi
+    done;
     becho "\n** NOTE: A backup of your dotfiles has been placed in ${BKUP} **\n"
+    # Install Dotfiles
     lstart "Installing Dot Files..."
     shopt -s dotglob
     rsync --exclude ".git/" \
