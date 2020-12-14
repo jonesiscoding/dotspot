@@ -1,3 +1,5 @@
+# shellcheck shell=bash
+
 black="\033[0;30m"
 blackb="\033[1;30m"
 white="\033[0;37m"
@@ -76,31 +78,33 @@ function doComposer() {
   curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
     && curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
     && php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }" \
-    && php /tmp/composer-setup.php --no-ansi --install-dir=${LOCAL_BIN} --filename=composer --snapshot \
+    && php /tmp/composer-setup.php --no-ansi --install-dir="${LOCAL_BIN}" --filename=composer --snapshot \
     && rm -f /tmp/composer-setup.*
   lend "Installing Composer"
 }
 
 function doBox() {
+  local BOX_FILE
   lstart "Installing Box..."
   BOX_FILE=$(mktemp)
   curl -o "$BOX_FILE" -SL "${BOXURL}"
-  mv ${BOX_FILE} ${LOCAL_BIN}/box; chmod 755 ${LOCAL_BIN}/box
+  mv "${BOX_FILE}" "${LOCAL_BIN}/box"; chmod 755 "${LOCAL_BIN}"/box
   lend "Installing Box"
 }
 
 function doDk() {
   lstart "Installing Docker Compose Util..."
-  cp -v "../shared/docker/dk" "${LOCAL_SBIN}/"; chmod 755 ${LOCAL_SBIN}/dk
+  cp -v "../shared/docker/dk" "${LOCAL_SBIN}/"; chmod 755 "${LOCAL_SBIN}/dk"
   lend "Installing Docker Compose Util..."
 }
 
 function doPleasing() {
+  local PLEASING_FILE
   lstart "Installing Pleasing..."
   PLEASING_FILE=$(mktemp)
   curl -o "$PLEASING_FILE" -SL "${PLEASINGURL}"
-  mv ${PLEASING_FILE} ${LOCAL_BIN}/pleasing
-  chmod 755 ${LOCAL_BIN}/pleasing
+  mv "${PLEASING_FILE}" "${LOCAL_BIN}/pleasing"
+  chmod 755 "${LOCAL_BIN}/pleasing"
   lend "Installing Pleasing"
 }
 

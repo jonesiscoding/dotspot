@@ -49,7 +49,7 @@ lstart "Installing Homebrew Packages"
 # Install Packages
 for PACKAGE in "${PACKAGES[@]}"
 do
-  brew install $PACKAGE
+  brew install "$PACKAGE"
 done
 
 # Remove outdated versions from the cellar.

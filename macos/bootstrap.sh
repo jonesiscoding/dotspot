@@ -101,12 +101,13 @@ if [ -f /usr/bin/rsync ]; then
       --exclude "functions/" \
       --exclude "README.md" \
       --exclude "LICENSE" \
-      -avP --no-perms ./.* $HOME/
+      -avP --no-perms ./.* "$HOME/"
     lend "Installing Dot Files"
   fi
 fi
 
 if [ -f ~/.bash_profile ]; then
+  # shellcheck source=./.bash_profile
   source ~/.bash_profile
 fi
 
