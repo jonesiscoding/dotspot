@@ -1,10 +1,8 @@
 # Set up user's bin & sbin
-if [ -z "${LOCAL_BIN}" ]; then
-  export LOCAL_BIN=$HOME/.local/bin
+if [ -n "${LOCAL_BIN}" ]; then
 	export PATH="$LOCAL_BIN:$PATH";
 fi
-if [ -z "${LOCAL_SBIN}" ]; then
-  export LOCAL_SBIN=$HOME/.local/sbin
+if [ -n "${LOCAL_SBIN}" ]; then
   export PATH="$LOCAL_SBIN:$PATH";
 fi
 
