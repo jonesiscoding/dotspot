@@ -1,12 +1,4 @@
-# Set up user's bin & sbin
-if [ -z "${LOCAL_BIN}" ]; then
-  export LOCAL_BIN=$HOME/.local/bin
-	export PATH="$LOCAL_BIN:$PATH";
-fi
-if [ -z "${LOCAL_SBIN}" ]; then
-  export LOCAL_SBIN=$HOME/.local/sbin
-  export PATH="$LOCAL_SBIN:$PATH";
-fi
+# shellcheck shell=bash
 
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
@@ -15,6 +7,14 @@ for file in $HOME/.{path,exports,extra,aliases,functions}; do
 	[ -r "$file" ] && [ -f "$file" ] && source "$file";
 done;
 unset file;
+
+# Set up user's bin & sbin
+if [ -n "${LOCAL_BIN}" ]; then
+	export PATH="$LOCAL_BIN:$PATH";
+fi
+if [ -n "${LOCAL_SBIN}" ]; then
+  export PATH="$LOCAL_SBIN:$PATH";
+fi
 
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob;

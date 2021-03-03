@@ -130,8 +130,6 @@ function doPleasing() {
 
 function includePhpAddons() {
   if ask "Install COMPOSER, BOX, and PLEASING?" Y; then
-    # Make sure directory exists
-    mkdir -p ${LOCAL_BIN}
     # Install Composer
     if [ ! -f "${LOCAL_BIN}/composer" ]; then
       doComposer
