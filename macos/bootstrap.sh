@@ -67,20 +67,26 @@ fi
 
 # Backup & Install DotFiles
 if [ -f /usr/bin/rsync ]; then
-  if ask "Install Dot Files?" Y; then
-    # Backup DotFiles
-    BKUP="$HOME/.dotbkup/$(date +"%Y%m%d")"
-    for file in $HOME/.{gitattributes,gitconfig,gitignore,bashrc,bash_profile}; do
-      [ ! -d "${BKUP}" ] && mkdir -p "${BKUP}"
-      if [ -f "$file" ]; then
-        cp "$file" "${BKUP}/"
-      fi
-    done;
-    becho "\n** NOTE: A backup of your dotfiles has been placed in ${BKUP} **\n"
-    lstart "Installing Dot Files..."
-    shopt -s dotglob
-    rsync --exclude ".git/" --exclude ".idea/" -a -i --no-perms ./.??* "$HOME/"
-    lend "Installing Dot Files"
+  DRYRUN=$(rsync --exclude ".git/" --exclude ".idea/" --dry-run -a -i --no-perms ./.??* "$HOME/")
+  if [ -n "$DRYRUN" ]; then
+    if ask "Install Dot Files?" Y; then
+      # Backup DotFiles
+      BKUP="$HOME/.dotbkup/$(date +"%Y%m%d")"
+      for file in $HOME/.{gitattributes,gitconfig,gitignore,bashrc,bash_profile}; do
+        [ ! -d "${BKUP}" ] && mkdir -p "${BKUP}"
+        if [ -f "$file" ]; then
+          cp "$file" "${BKUP}/"
+        fi
+      done;
+      becho "\n** NOTE: A backup of your dotfiles has been placed in ${BKUP} **\n"
+      # Install Dotfiles
+      lstart "Installing Dot Files..."
+      shopt -s dotglob
+      rsync --exclude ".git/" --exclude ".idea/" -a -i --no-perms ./.??* "$HOME/"
+      lend "Installing Dot Files"
+    fi
+  else
+    becho "\nNo Dotfile Updates Needed."
   fi
 fi
 
