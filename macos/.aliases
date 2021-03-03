@@ -117,6 +117,9 @@ alias reload='exec "${SHELL}" -l'
 # Print each PATH entry on a separate line
 alias path='echo -e "${PATH}" | tr ":" "\n"'
 
+# Top sorted by CPU usage
+alias ctop="top -F -R -o cpu"
+
 #### Application Specific Aliases
 
 # Sublime
