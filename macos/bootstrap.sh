@@ -79,20 +79,7 @@ if [ -f /usr/bin/rsync ]; then
     becho "\n** NOTE: A backup of your dotfiles has been placed in ${BKUP} **\n"
     lstart "Installing Dot Files..."
     shopt -s dotglob
-    rsync --exclude ".git/" \
-      --exclude "macos" \
-      --exclude "sbin" \
-      --exclude "shared" \
-      --exclude "chromeos" \
-      --exclude "vscode" \
-      --exclude "brew.sh" \
-      --exclude ".dotbkup" \
-      --exclude "bootstrap.sh" \
-      --exclude "/.gitignore" \
-      --exclude "functions/" \
-      --exclude "README.md" \
-      --exclude "LICENSE" \
-      -avP --no-perms ./.* $HOME/
+    rsync --exclude ".git/" --exclude ".idea/" -a -i --no-perms ./.??* "$HOME/"
     lend "Installing Dot Files"
   fi
 fi
