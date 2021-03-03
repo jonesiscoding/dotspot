@@ -1,22 +1,41 @@
-black="\033[0;30m"
-blackb="\033[1;30m"
-white="\033[0;37m"
-whiteb="\033[1;37m"
-red="\033[0;31m"
-redb="\033[1;31m"
-green="\033[0;32m"
-greenb="\033[1;32m"
-yellow="\033[0;33m"
-yellowb="\033[1;33m"
-blue="\033[0;34m"
-blueb="\033[1;34m"
-purple="\033[0;35m"
-purpleb="\033[1;35m"
-lightblue="\033[0;36m"
-lightblueb="\033[1;36m"
-end="\033[0m"
+# shellcheck shell=bash
+
+### region ############################################ UI Functions
+
+_TPUT=""
+
+function write() {
+  printf "%-50s " "$1"
+}
+
+function println() {
+  [ -z "$_TPUT" ] && _TPUT=$(which tput)
+  if [ -n "$TERM" ]; then
+    printf "["; $_TPUT setaf "$1"; printf "%s" "${2}"; $_TPUT sgr0; echo "]"
+  else
+    echo "[${2}]"
+  fi
+}
+
+function successln() {
+  println 2 "${1}"
+}
+
+function errorln() {
+  println 1 "${1}"
+}
 
 becho() {
+  local lightblueb bend
+  [ -z "$_TPUT" ] && _TPUT=$(which tput)
+  if [ -n "$TERM" ]; then
+    lightblueb=$(tput setaf 4)
+    bend=$(tput sgr0)
+  else
+    lightblueb=""
+    bend=""
+  fi
+
   echo -e "${lightblueb}${1}${end}";
 }
 
@@ -28,7 +47,9 @@ lend() {
   becho "${LINE}\nEND: $1\n"
 }
 
-indent() { sed 's/^/  /'; }
+### endregion ######################################### UI functions
+
+indent() { echo "$1" | sed 's/^/  /'; }
 
 # This is a general-purpose function to ask Yes/No questions in Bash, either
 # with or without a default answer. It keeps repeating the question until it
@@ -52,6 +73,8 @@ ask() {
     while true; do
 
         # Ask the question (not using "read -p" as it uses stderr not stdout)
+        purpleb=$(tput setaf 5)
+        end=$(tput sgr0)
         echo -e -n "${purpleb}$1 ${end}[$prompt] "
 
         # Read the answer (use /dev/tty in case stdin is redirected from somewhere else)
