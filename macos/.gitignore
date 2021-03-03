@@ -23,3 +23,6 @@ Thumbs.db
 # PHPStorm, VSCode
 .idea/
 .vscode/
+
+# Unison
+.unison.*.unison.tmp

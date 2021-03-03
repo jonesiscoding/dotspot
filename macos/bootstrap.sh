@@ -78,9 +78,10 @@ if [ -f /usr/bin/rsync ]; then
 fi
 
 if [ -f ~/.bash_profile ]; then
+  # shellcheck source=./.bash_profile
   source ~/.bash_profile
 fi
 
 becho "\nTo set some reasonable MacOS defaults, run the command '~/.macos'.  Note that sudo rights are required.";
-becho "Some of the alterations made may also require that you run './brew.sh' to install dependencies.\n"
+becho "Some of the alterations made may also require that you run './brew.sh' to install dependencies."
 echo -e " "
