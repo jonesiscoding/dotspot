@@ -44,6 +44,15 @@ if ask "Install jq Binary?" Y; then
   PACKAGES+=("jq")
 fi
 
+if ask "Install yq Binary?" Y; then
+  PACKAGES+=("yq")
+fi
+
+if ask "Install unison Binary?" Y; then
+  PACKAGES+=("unison")
+  PACKAGES+=("unison-fsmonitor")
+fi
+
 lstart "Installing Homebrew Packages"
 
 # Install Packages
