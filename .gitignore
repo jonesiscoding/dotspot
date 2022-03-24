@@ -1,7 +1,28 @@
-composer.phar
-/vendor/
+# Compiled Python files
+*.pyc
 
-# Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control
-# You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
-# composer.lock
-/.idea/*
+# Folder view configuration files
+.DS_Store
+Desktop.ini
+
+# Thumbnail cache files
+._*
+Thumbs.db
+
+# Files that might appear on external disks
+.Spotlight-V100
+.Trashes
+
+# Composer, Box, Pleasing, php_cs_fixer
+/vendor/
+/composer.phar
+/box.phar
+/pleasing.phar
+/.php_cs.cache
+
+# PHPStorm, VSCode
+macos/.idea/
+.vscode/
+
+# Unison
+.unison.*.unison.tmp

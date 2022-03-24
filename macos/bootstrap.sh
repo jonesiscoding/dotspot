@@ -3,7 +3,7 @@
 source "../shared/sbin/versions.sh"
 source "../shared/sbin/functions.sh"
 if [ -f "$HOME/.exports" ]; then
-  # shellcheck source=./.exports
+  # shellcheck source=../.exports
   source "$HOME/.exports"
 fi
 
@@ -91,7 +91,7 @@ if [ -f /usr/bin/rsync ]; then
 fi
 
 if [ -f ~/.bash_profile ]; then
-  # shellcheck source=./.bash_profile
+  # shellcheck source=./../.bash_profile
   source ~/.bash_profile
 fi
 
