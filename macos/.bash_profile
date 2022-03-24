@@ -1,13 +1,5 @@
 # shellcheck shell=bash
 
-# Set up user's bin & sbin
-if [ -n "${LOCAL_BIN}" ]; then
-	export PATH="$LOCAL_BIN:$PATH";
-fi
-if [ -n "${LOCAL_SBIN}" ]; then
-  export PATH="$LOCAL_SBIN:$PATH";
-fi
-
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
 # * ~/.extra can be used for other settings you don’t want to commit.

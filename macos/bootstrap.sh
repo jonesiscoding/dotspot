@@ -2,9 +2,9 @@
 
 source "../shared/sbin/versions.sh"
 source "../shared/sbin/functions.sh"
-if [ -f "$HOME/.export" ]; then
-  # shellcheck source=./.export
-  source "$HOME/.export"
+if [ -f "$HOME/.exports" ]; then
+  # shellcheck source=./.exports
+  source "$HOME/.exports"
 fi
 
 
@@ -47,6 +47,7 @@ fi
 
 if [ ! -w "${LOCAL_BIN}" ] || [ ! -w "${LOCAL_SBIN}" ]; then
   echo "ERROR: Cannot write to ${LOCAL_BIN} or ${LOCAL_SBIN}. That means we have nowhere to put scripts."
+  exit 1
 fi
 
 # Prompt for installation of Composer, Box, Pleasing
@@ -66,34 +67,26 @@ fi
 
 # Backup & Install DotFiles
 if [ -f /usr/bin/rsync ]; then
-  if ask "Install Dot Files?" Y; then
-    # Backup DotFiles
-    BKUP="$HOME/.dotbkup/$(date +"%Y%m%d")"
-    for file in $HOME/.{gitattributes,gitconfig,gitignore,bashrc,bash_profile}; do
-      [ ! -d "${BKUP}" ] && mkdir -p "${BKUP}"
-      if [ -f "$file" ]; then
-        cp "$file" "${BKUP}/"
-	    fi
-    done;
-    becho "\n** NOTE: A backup of your dotfiles has been placed in ${BKUP} **\n"
-    # Install Dotfiles
-    lstart "Installing Dot Files..."
-    shopt -s dotglob
-    rsync --exclude ".git/" \
-      --exclude "macos" \
-      --exclude "sbin" \
-      --exclude "shared" \
-      --exclude "chromeos" \
-      --exclude "vscode" \
-      --exclude "brew.sh" \
-      --exclude ".dotbkup" \
-      --exclude "bootstrap.sh" \
-      --exclude "/.gitignore" \
-      --exclude "functions/" \
-      --exclude "README.md" \
-      --exclude "LICENSE" \
-      -avP --no-perms ./.* "$HOME/"
-    lend "Installing Dot Files"
+  DRYRUN=$(rsync --exclude ".git/" --exclude ".idea/" --dry-run -a -i --no-perms ./.??* "$HOME/")
+  if [ -n "$DRYRUN" ]; then
+    if ask "Install Dot Files?" Y; then
+      # Backup DotFiles
+      BKUP="$HOME/.dotbkup/$(date +"%Y%m%d")"
+      for file in $HOME/.{gitattributes,gitconfig,gitignore,bashrc,bash_profile}; do
+        [ ! -d "${BKUP}" ] && mkdir -p "${BKUP}"
+        if [ -f "$file" ]; then
+          cp "$file" "${BKUP}/"
+        fi
+      done;
+      becho "\n** NOTE: A backup of your dotfiles has been placed in ${BKUP} **\n"
+      # Install Dotfiles
+      lstart "Installing Dot Files..."
+      shopt -s dotglob
+      rsync --exclude ".git/" --exclude ".idea/" -a -i --no-perms ./.??* "$HOME/"
+      lend "Installing Dot Files"
+    fi
+  else
+    becho "\nNo Dotfile Updates Needed."
   fi
 fi
 
@@ -103,5 +96,5 @@ if [ -f ~/.bash_profile ]; then
 fi
 
 becho "\nTo set some reasonable MacOS defaults, run the command '~/.macos'.  Note that sudo rights are required.";
-becho "Some of the alterations made may also require that you run './brew.sh' to install dependencies.\n"
+becho "Some of the alterations made may also require that you run './brew.sh' to install dependencies."
 echo -e " "
