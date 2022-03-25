@@ -268,6 +268,7 @@ function install_php() {
 function install_composer() {
   local BIGLINE
   local PHP_BIN
+  local SUCCESS
 
   BIGLINE="-----------------------------------"
 
@@ -287,21 +288,27 @@ function install_composer() {
     return 1
   fi
 
-  echo "Installing Composer"
+  echo "Installing Composer..."
   echo $BIGLINE
-  if ! /usr/bin/curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
-    && /usr/bin/curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
-    && $PHP_BIN -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }" \
-    && $PHP_BIN /tmp/composer-setup.php --no-ansi --install-dir="${LOCAL_BIN}" --filename=composer --snapshot \
-    && /bin/rm -f /tmp/composer-setup.*; then
+  SUCCESS=false
+  if /usr/bin/curl -o /tmp/composer-setup.php https://getcomposer.org/installer && /usr/bin/curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig; then
+    if $PHP_BIN -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }"; then
+      if $PHP_BIN /tmp/composer-setup.php --no-ansi --install-dir="${LOCAL_BIN}" --filename=composer --snapshot; then
+        SUCCESS=true
+      fi
+    fi
+  fi
+
+  [ -f /tmp/composer-setup.php ] && /bin/rm -f /tmp/composer-setup.php
+  [ -f /tmp/composer-setup.sig ] && /bin/rm -f /tmp/composer-setup.sig
+
       echo $BIGLINE
+  if $SUCCESS; then
+    return 0
+  else
       echo "ERROR: Composer not successfully installed!"
       return 1
   fi
-
-  echo $BIGLINE
-
-  return 0
 }
 
 function install_box() {
