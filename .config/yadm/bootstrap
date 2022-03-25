@@ -1,0 +1,68 @@
+#!/bin/bash
+
+source "functions.sh"
+source "macos.sh"
+
+if [ -f "$HOME/.exports.local" ]; then
+  # shellcheck source=../../.exports
+  source "$HOME/.exports.local"
+fi
+
+# Determine if user has write access to /usr/local/bin
+[ -z "$LOCAL_BIN" ] && LOCAL_BIN="/usr/local/bin"
+if [ ! -d "$LOCAL_BIN" ]; then
+  if ! /bin/mkdir -p "$LOCAL_BIN"; then
+    LOCAL_BIN="$HOME/.bin"
+  fi
+elif ! /bin/test -w "$LOCAL_BIN"; then
+  LOCAL_BIN="$HOME/.bin"
+fi
+
+# Determine if user has write access to /usr/local/sbin
+[ -z "$LOCAL_SBIN" ] && LOCAL_SBIN="/usr/local/sbin"
+if [ ! -d "$LOCAL_SBIN" ]; then
+  if ! /bin/mkdir -p "$LOCAL_SBIN"; then
+    LOCAL_SBIN="$HOME/.sbin"
+  fi
+elif ! /bin/test -w "$LOCAL_SBIN"; then
+  LOCAL_SBIN="$HOME/.sbin"
+fi
+
+# Determine if user has write access to $DEV_DIR
+[ -z "$DEV_DIR" ] && DEV_DIR="$HOME/Developer"
+if [ ! -d "$DEV_DIR" ]; then
+  if ! /bin/mkdir -p "$DEV_DIR"; then
+    echo "ERROR: Could not create $DEV_DIR!"
+    exit 1
+  fi
+elif ! /bin/test -w "$DEV_DIR"; then
+  echo "ERROR: Could not write to $DEV_DIR"
+  exit 1
+fi
+
+# Add the $DEV_DIR variable to .exports.local if not present
+[ -f "$HOME/.exports.local" ] && touch "$HOME/.exports.local"
+if ! grep -q "DEV_DIR=" "$HOME/.exports.local"; then
+  echo "export DEV_DIR=\"\$HOME/$DEV_DIR\"" >> "$HOME/.exports.local"
+fi
+
+# Add the $LOCAL_BIN variable to .exports.local if not present
+if ! grep -q "LOCAL_BIN=" "$HOME/.exports.local"; then
+  echo "export LOCAL_BIN=\"$LOCAL_BIN\"" >> "$HOME/.exports.local"
+fi
+
+# Add the $LOCAL_SBIN variable to .exports.local if not present
+if ! grep -q "LOCAL_SBIN=" "$HOME/.exports.local"; then
+  echo "export LOCAL_SBIN=\"$LOCAL_SBIN\"" >> "$HOME/.exports.local"
+fi
+
+if _isMac; then
+  install_brew || exit 1
+  install_brewfile || exit 1
+  if ! install_php && install_composer; then
+    exit 1
+  fi
+  configure_macos || exit 1
+fi
+
+exit 0

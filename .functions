@@ -12,8 +12,9 @@ function cdf() { # short for `cdfinder`
 
 # Create a .tar.gz archive, using `zopfli`, `pigz` or `gzip` for compression
 function targz() {
-  local size zippedSize
-	local tmpFile="${@%/}.tar";
+  local size zippedSize tmpFile cmd=""
+  # shellcheck disable=SC2124
+	tmpFile="${@%/}.tar";
 	tar -cvf "${tmpFile}" --exclude=".DS_Store" "${@}" || return 1;
 
 	size=$(
@@ -21,7 +22,6 @@ function targz() {
 		stat -c"%s" "${tmpFile}" 2> /dev/null;  # GNU `stat`
 	);
 
-	local cmd="";
 	if (( size < 52428800 )) && hash zopfli 2> /dev/null; then
 		# the .tar file is smaller than 50 MB and Zopfli is available; use it
 		cmd="zopfli";
@@ -60,8 +60,7 @@ function fs() {
 }
 
 # Use Git’s colored diff when available
-hash git &>/dev/null;
-if [ $? -eq 0 ]; then
+if hash git &>/dev/null; then
 	function diff() {
 		git diff --no-index --color-words "$@";
 	}
@@ -69,7 +68,8 @@ fi;
 
 # Create a data URL from a file
 function dataurl() {
-	local mimeType=$(file -b --mime-type "$1");
+  local mimeType
+  mimeType=$(file -b --mime-type "$1");
 	if [[ $mimeType == text/* ]]; then
 		mimeType="${mimeType};charset=utf-8";
 	fi
@@ -78,9 +78,10 @@ function dataurl() {
 
 # Compare original and gzipped file size
 function gz() {
-	local origsize=$(wc -c < "$1");
-	local gzipsize=$(gzip -c "$1" | wc -c);
-	local ratio=$(echo "$gzipsize * 100 / $origsize" | bc -l);
+  local origsize gzipsize ratio
+  origsize=$(wc -c < "$1");
+	gzipsize=$(gzip -c "$1" | wc -c);
+	ratio=$(echo "$gzipsize * 100 / $origsize" | bc -l);
 	printf "orig: %d bytes\n" "$origsize";
 	printf "gzip: %d bytes (%2.2f%%)\n" "$gzipsize" "$ratio";
 }
@@ -93,20 +94,22 @@ function digga() {
 # Show all the names (CNs and SANs) listed in the SSL certificate
 # for a given domain
 function getcertnames() {
+  local domain tmp certText
+
 	if [ -z "${1}" ]; then
 		echo "ERROR: No domain specified.";
 		return 1;
 	fi;
 
-	local domain="${1}";
+	domain="${1}";
 	echo "Testing ${domain}…";
 	echo ""; # newline
 
-	local tmp=$(echo -e "GET / HTTP/1.0\nEOT" \
+	tmp=$(echo -e "GET / HTTP/1.0\nEOT" \
 		| openssl s_client -connect "${domain}:443" -servername "${domain}" 2>&1);
 
 	if [[ "${tmp}" = *"-----BEGIN CERTIFICATE-----"* ]]; then
-		local certText=$(echo "${tmp}" \
+		certText=$(echo "${tmp}" \
 			| openssl x509 -text -certopt "no_aux, no_header, no_issuer, no_pubkey, \
 			no_serial, no_sigdump, no_signame, no_validity, no_version");
 		echo "Common Name:";
@@ -143,12 +146,4 @@ function o() {
 	else
 		open "$@";
 	fi;
-}
-
-# `tre` is a shorthand for `tree` with hidden files and color enabled, ignoring
-# the `.git` directory, listing directories first. The output gets piped into
-# `less` with options to preserve color and line numbers, unless the output is
-# small enough for one screen.
-function tre() {
-	tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | less -FRNX;
 }

@@ -1,20 +1,21 @@
 # shellcheck shell=bash
 
 # Load the shell dotfiles, and then some:
-# * ~/.path can be used to extend `$PATH`.
-# * ~/.extra can be used for other settings you don’t want to commit.
-for file in $HOME/.{path,exports,extra,aliases,functions}; do
-	[ -r "$file" ] && [ -f "$file" ] && source "$file";
+# * ~/.exports can be used to export `$PATH`.
+# * ~/.local can be used for other settings you don’t want to commit.
+for file in $HOME/.{exports,local,aliases,functions}; do
+	if [ -r "$file" ] && [ -f "$file" ]; then
+	  # shellcheck source=.exports
+    # shellcheck source=.aliases
+    # shellcheck source=.functions
+	  source "$file";
+	  if [ -r "$file.local" ] && [ -f "$file.local" ]; then
+	    # shellcheck disable=SC1090
+	    source "$file.local"
+	  fi
+	fi
 done;
 unset file;
-
-# Set up user's bin & sbin
-if [ -n "${LOCAL_BIN}" ]; then
-	export PATH="$LOCAL_BIN:$PATH";
-fi
-if [ -n "${LOCAL_SBIN}" ]; then
-  export PATH="$LOCAL_SBIN:$PATH";
-fi
 
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob;
@@ -37,6 +38,7 @@ if which brew &> /dev/null && [ -r "$(brew --prefix)/etc/profile.d/bash_completi
 	# Ensure existing Homebrew v1 completions continue to work
 	BASH_COMPLETION_COMPAT_DIR="$(brew --prefix)/etc/bash_completion.d";
 	export BASH_COMPLETION_COMPAT_DIR
+  # shellcheck disable=SC1090
 	source "$(brew --prefix)/etc/profile.d/bash_completion.sh";
 elif [ -f /etc/bash_completion ]; then
 	source /etc/bash_completion;
@@ -44,9 +46,6 @@ fi;
 
 # Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
 [ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh;
-
-# Add tab completion for `defaults read|write NSGlobalDomain`
-complete -W "NSGlobalDomain" defaults;
 
 # Add `killall` tab completion for common apps
 complete -o "nospace" -W "Contacts Calendar Dock Finder Safari SystemUIServer Terminal" killall;

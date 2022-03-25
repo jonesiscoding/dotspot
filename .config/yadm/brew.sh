@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-source "../shared/sbin/versions.sh"
-source "../shared/sbin/functions.sh"
+source "versions.sh"
+source "functions.sh"
 
 PACKAGES=("bash-completion2")
 
@@ -48,8 +48,9 @@ if ask "Install yq Binary?" Y; then
   PACKAGES+=("yq")
 fi
 
-if ask "Install PHP CS Fixer?"; then
-	PACKAGES+=("php-cs-fixer")
+if ask "Install unison Binary?" Y; then
+  PACKAGES+=("unison")
+  PACKAGES+=("unison-fsmonitor")
 fi
 
 lstart "Installing Homebrew Packages"
