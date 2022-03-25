@@ -140,6 +140,39 @@ function install_brew() {
   fi
 }
 
+function install_brewfile() {
+  local BREW_BIN
+  local BIGLINE
+
+  BIGLINE="-----------------------------------"
+
+  if ! _isBrewing; then
+    echo "ERROR: Cannot install items in .Brewfile.  Homebrew is not installed."
+    return 1
+  fi
+
+  if _skip "Brewfile"; then
+    echo "Skipping Brewfile (present in .skip)"
+    return 0
+  fi
+
+  if [ -f "$HOME/.Brewfile" ] && [ ! -s "$HOME/.Brewfile" ]; then
+    BREW_BIN=$(_brewPath)
+    echo "Updating Homebrew bundle.."
+
+    if "$BREW_BIN" bundle --global; then
+      echo $BIGLINE
+      return 0
+    else
+      echo $BIGLINE
+      echo "ERROR: Could not install brew bundle!"
+      return 1
+    fi
+  else
+    echo "Skipping Brewfile (not present)"
+  fi
+}
+
 function install_with_brew() {
   local BREW_BIN
   local FORMULA
