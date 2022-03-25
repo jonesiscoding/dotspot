@@ -64,8 +64,12 @@ function _skip() {
   ITEM="$1"
   PATTERN="^${ITEM}$"
 
-  if /usr/bin/grep -q "'$PATTERN'" "$HOME/.skip"; then
-    return 0
+  if [ -f "$HOME/.skip" ]; then
+    if /usr/bin/grep -q "'$PATTERN'" "$HOME/.skip"; then
+      return 0
+    else
+      return 1
+    fi
   else
     return 1
   fi
