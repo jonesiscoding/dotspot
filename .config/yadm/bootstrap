@@ -45,7 +45,7 @@ fi
 # Add the $DEV_DIR variable to .exports.local if not present
 [ -f "$HOME/.exports.local" ] && touch "$HOME/.exports.local"
 if ! grep -q "DEV_DIR=" "$HOME/.exports.local"; then
-  echo "export DEV_DIR=\"\$HOME/$DEV_DIR\"" >> "$HOME/.exports.local"
+  echo "export DEV_DIR=\"$DEV_DIR\"" >> "$HOME/.exports.local"
 fi
 
 # Add the $LOCAL_BIN variable to .exports.local if not present
@@ -68,7 +68,7 @@ if ! echo "$PATH" | grep -q "$LOCAL_SBIN" || ! echo "$PATH" | grep -q "$LOCAL_BI
     NEWPATH="$LOCAL_BIN:$NEWPATH"
   fi
 
-  echo "export PATH=\"$NEWPATH:\$PATH" >> "$HOME/.exports.local"
+  echo "export PATH=\"$NEWPATH:\$PATH" >> "$HOME/.exports.local\""
 fi
 
 # shellcheck source=../../.exports
