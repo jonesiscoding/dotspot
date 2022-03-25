@@ -147,3 +147,49 @@ function o() {
 		open "$@";
 	fi;
 }
+
+function ssh-hostgen() {
+  local IDOMAIN
+  local IHOST
+  local FQDN
+  local PLATFORM
+  local IUSER
+  local IN
+  local IPORT
+
+  if ! grep -q "$1" ~/.ssh/config && ! grep -q "$1" ~/.ssh/config.local; then
+    #### Input Variables
+    IN="$1"
+    # Username
+    IUSER=$(echo "$IN" | cut -d '@' -f 1)
+    [ -z "$IUSER" ] && [ -n "$SSH_USER" ] && IUSER="$SSH_USER"
+    [ -z "$IUSER" ] && IUSER="$USER"
+    # Host
+    IHOST=$(echo "$IN" | cut -d '@' -f 2)
+    # Domain
+    IDOMAIN=$(echo "$IN" | cut -d '.' -f 2- | grep "\.")
+    if [ -z "$IDOMAIN" ]; then
+      PLATFORM=$(uname -s)
+      if [ "$PLATFORM" == "Darwin" ]; then
+        IDOMAIN=$(scutil --get HostName | cut -d '.' -f 2- | grep "\.")
+      elif [ -n "$HOSTNAME" ]; then
+        IDOMAIN=$(echo "$HOSTNAME" | cut -d '.' -f 2- | grep "\.")
+      fi
+    fi
+    [ -z "$IDOMAIN" ] && IDOMAIN=".local"
+    # FQDN
+    FQDN="$1.$IDOMAIN"
+    # Port
+    IPORT=$(echo "$IN" | cut -d ':' -f 2)
+
+    echo "Adding Host '$IHOST' to SSH Config..."
+    cat >> ~/.ssh/config.local << EOF
+Host $IHOST
+    Hostname $FQDN
+    User $IUSER
+    Port $IPORT
+EOF
+  else
+    echo "Host '$IHOST' is already present in SSH Config."
+  fi
+}
