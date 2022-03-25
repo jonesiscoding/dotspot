@@ -59,9 +59,8 @@ fi
 if _isMac; then
   install_brew || exit 1
   install_brewfile || exit 1
-  if ! install_php && install_composer; then
-    exit 1
-  fi
+  install_composer || exit 1
+  install_box || exit 1
   configure_macos || exit 1
 fi
 
