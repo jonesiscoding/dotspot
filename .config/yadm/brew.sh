@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-source "../shared/sbin/versions.sh"
-source "../shared/sbin/functions.sh"
+source "versions.sh"
+source "functions.sh"
 
 PACKAGES=("bash-completion2")
 
