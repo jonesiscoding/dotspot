@@ -25,7 +25,7 @@ function _phpPath() {
   local PHP_BIN
   local ARCH
 
-  PHP_BIN=$(/usr/bin/which)
+  PHP_BIN=$(/usr/bin/which php)
   if [ -z "$PHP_BIN" ]; then
     if _isMac; then
       if [ -f "/usr/bin/php" ]; then
