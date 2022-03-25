@@ -165,7 +165,8 @@ function install_brewfile() {
   BREWFILE=$(cat "$HOME/.Brewfile" | xargs)
   if [ -f "$HOME/.Brewfile" ] && [ -n "$BREWFILE" ]; then
     BREW_BIN=$(_brewPath)
-    echo "Updating Homebrew bundle.."
+    echo "Updating Homebrew bundle..."
+    echo $BIGLINE
 
     if "$BREW_BIN" bundle --global; then
       echo $BIGLINE
