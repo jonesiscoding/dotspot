@@ -147,6 +147,7 @@ function install_brew() {
 function install_brewfile() {
   local BREW_BIN
   local BIGLINE
+  local BREWFILE
 
   BIGLINE="-----------------------------------"
 
@@ -160,7 +161,9 @@ function install_brewfile() {
     return 0
   fi
 
-  if [ -f "$HOME/.Brewfile" ] && [ ! -s "$HOME/.Brewfile" ]; then
+  # shellcheck disable=SC2002
+  BREWFILE=$(cat "$HOME/.Brewfile" | xargs)
+  if [ -f "$HOME/.Brewfile" ] && [ -n "$BREWFILE" ]; then
     BREW_BIN=$(_brewPath)
     echo "Updating Homebrew bundle.."
 
