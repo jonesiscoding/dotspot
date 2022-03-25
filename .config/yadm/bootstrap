@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source "functions.sh"
+source "macos.sh"
 
 if [ -f "$HOME/.exports.local" ]; then
   # shellcheck source=../../.exports
