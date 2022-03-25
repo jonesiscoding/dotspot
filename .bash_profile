@@ -1,10 +1,19 @@
 # shellcheck shell=bash
 
 # Load the shell dotfiles, and then some:
-# * ~/.path can be used to extend `$PATH`.
-# * ~/.extra can be used for other settings you don’t want to commit.
-for file in $HOME/.{path,exports,extra,aliases,functions}; do
-	[ -r "$file" ] && [ -f "$file" ] && source "$file";
+# * ~/.exports can be used to export `$PATH`.
+# * ~/.local can be used for other settings you don’t want to commit.
+for file in $HOME/.{exports,local,aliases,functions}; do
+	if [ -r "$file" ] && [ -f "$file" ]; then
+	  # shellcheck source=.exports
+    # shellcheck source=.aliases
+    # shellcheck source=.functions
+	  source "$file";
+	  if [ -r "$file.local" ] && [ -f "$file.local" ]; then
+	    # shellcheck disable=SC1090
+	    source "$file.local"
+	  fi
+	fi
 done;
 unset file;
 
