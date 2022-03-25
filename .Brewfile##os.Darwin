@@ -1,4 +1,4 @@
-brew "bash-completion2"
+brew "bash-completion@2"
 brew "shellcheck"
 brew "php"
 brew "php-cs-fixer"
