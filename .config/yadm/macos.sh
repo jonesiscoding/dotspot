@@ -1,6 +1,7 @@
 # shellcheck shell=bash
 
-source functions.sh
+# shellcheck source=./functions.sh
+source "$HOME/.config/yadm/functions.sh"
 
 configure_macos() {
 

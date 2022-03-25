@@ -72,7 +72,7 @@ function _skip() {
 }
 
 function _isMac() {
- if [ "$(/usr/bin/arch -s)" == "Darwin" ]; then
+ if [ "$(/usr/bin/uname -s)" == "Darwin" ]; then
    return 0;
  else
    return 1;

@@ -1,7 +1,9 @@
 #!/bin/bash
 
-source "functions.sh"
-source "macos.sh"
+# shellcheck source=./functions.sh
+source "$HOME/.config/yadm/functions.sh"
+# shellcheck source=./macos.sh
+source "$HOME/.config/yadm/macos.sh"
 
 if [ -f "$HOME/.exports.local" ]; then
   # shellcheck source=../../.exports
