@@ -4,6 +4,10 @@ source functions.sh
 
 configure_macos() {
 
+  local MAC_VERSION
+  local MAC_MINOR
+  local MAC_MAJOR
+
   ### region ############################################ Prep
 
   # Close any open System Preferences panes, to prevent them from overriding
@@ -15,12 +19,13 @@ configure_macos() {
     while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
   fi
 
+  MAC_VERSION=$(sw_vers -productVersion)
+  MAC_MAJOR=$(echo "$MAC_VERSION" | cut -d'.' -f1)
+  MAC_MINOR=$(echo "$MAC_VERSION" | cut -d'.' -f2)
+
   ### endregion ######################################### Prep
 
   ### region ############################################ General UI/UX
-
-  # Increase window resize speed for Cocoa applications
-  defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
 
   # Expand save panel by default
   defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
@@ -57,8 +62,18 @@ configure_macos() {
 
   # Trackpad: enable tap to click for this user and for the login screen
   defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+  defaults write com.apple.AppleMultitouch.trackpad Clicking -bool true
   defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
   defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+
+  # Trackpad: disable force touch, set click thresholds, disable launchpad, rotate
+  defaults write com.apple.AppleMultitouch.trackpad ForceSuppressed -bool true
+  defaults write com.apple.AppleMultitouch.trackpad FirstClickThreshold -int 2
+  defaults write com.apple.AppleMultitouch.trackpad SecondClickThreshold -int 2
+
+  # Trackpad: disable pinch for launchpad, disable rotate
+  defaults write com.apple.AppleMultitouch.trackpad TrackpadPinch -int 0
+  defaults write com.apple.AppleMultitouch.trackpad TrackpadRotate -int 0
 
   # Enable Three Finger Drag
   defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool true
@@ -68,7 +83,7 @@ configure_macos() {
 
   ### region ############################################ Energy Saver
 
-  if $isSudoer; then
+  if _isMacSudo; then
     # Enable lid wakeup
     sudo pmset -a lidwake 1
 
@@ -91,19 +106,14 @@ configure_macos() {
   defaults write com.apple.screencapture location -string "${HOME}/Desktop"
 
   # Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)
-  defaults write com.apple.screencapture type -string "png"
+  defaults write com.apple.screencapture type -string "jpg"
 
   # Disable shadow in screenshots
   defaults write com.apple.screencapture disable-shadow -bool true
 
   # Enable subpixel font rendering on non-Apple LCDs
   # Reference: https://github.com/kevinSuttle/macOS-Defaults/issues/17#issuecomment-266633501
-  defaults write NSGlobalDomain AppleFontSmoothing -int 1
-
-  # Enable HiDPI display modes (requires restart)
-  if $isSudoer; then
-    sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
-  fi
+  # defaults write NSGlobalDomain AppleFontSmoothing -int 1
 
   ### endregion ######################################### Display
 
@@ -112,10 +122,11 @@ configure_macos() {
   # Prevent Time Machine from prompting to use new hard drives as backup volume
   defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
 
-  # Set Desktop as the default location for new Finder windows
+  # Set HOME as the default location for new Finder windows
+  # For Desktop use PfDe, for Documents use PfDo, for Home use PfHm
   # For other paths, use `PfLo` and `file:///full/path/here/`
-  defaults write com.apple.finder NewWindowTarget -string "PfDe"
-  defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/Desktop/"
+  defaults write com.apple.finder NewWindowTarget -string "PfHm"
+  defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
 
   # Show icons for hard drives, servers, and removable media on the desktop
   defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
@@ -132,20 +143,16 @@ configure_macos() {
   # Finder: show path bar
   defaults write com.apple.finder ShowPathbar -bool true
 
-  # Display full POSIX path as Finder window title
-  defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+  # Display full POSIX path as Finder window title (Somewhat annoying in Monterey)
+  if [ "$MAC_MAJOR" -lt "11" ]; then
+    defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+  fi
 
   # Keep folders on top when sorting by name
   defaults write com.apple.finder _FXSortFoldersFirst -bool true
 
   # When performing a search, search the current folder by default
   defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
-
-  # Enable spring loading for directories
-  defaults write NSGlobalDomain com.apple.springing.enabled -bool true
-
-  # Remove the spring loading delay for directories
-  defaults write NSGlobalDomain com.apple.springing.delay -float 0
 
   # Avoid creating .DS_Store files on network or USB volumes
   defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
@@ -169,7 +176,7 @@ configure_macos() {
   chflags nohidden ~/Library
 
   # Show the /Volumes folder
-  if $isSudoer; then
+  if _isMacSudo; then
     sudo chflags nohidden /Volumes
   fi
 
@@ -184,7 +191,7 @@ configure_macos() {
   defaults write com.apple.dock tilesize -int 36
 
   # Enable spring loading for all Dock items
-  defaults write com.apple.dock enable-spring-load-actions-on-all-items -bool true
+  # defaults write com.apple.dock enable-spring-load-actions-on-all-items -bool true
 
   # Show indicator lights for open applications in the Dock
   defaults write com.apple.dock show-process-indicators -bool true
@@ -207,8 +214,8 @@ configure_macos() {
   # Don’t show recent applications in Dock
   defaults write com.apple.dock show-recents -bool false
 
-  # Add iOS & Watch Simulator to Launchpad
-  if $isSudoer && [ -f "/Applications/Xcode.app" ]; then
+  # Add iOS & Watch Simulator to Applications
+  if _isMacSudo && [ -f "/Applications/Xcode.app" ]; then
     sudo ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app" "/Applications/Simulator.app"
     sudo ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator (Watch).app" "/Applications/Simulator (Watch).app"
   fi
@@ -238,16 +245,16 @@ configure_macos() {
   defaults write com.apple.Safari UniversalSearchEnabled -bool false
   defaults write com.apple.Safari SuppressSearchSuggestions -bool true
 
-  # Allow hitting the Backspace key to go to the previous page in history
+  # Do not allow hitting the Backspace key to go to the previous page in history
   defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2BackspaceKeyNavigationEnabled -bool false
 
   # Enable Safari’s debug menu
   defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
 
-  # Make Safari’s search banners default to Contains instead of Starts With
+  # Make Safari’s search banners default to "Contains" instead of Starts With
   defaults write com.apple.Safari FindOnPageMatchesWordStartsOnly -bool false
 
-  # Enable the Develop menu and the Web Inspector in Safari
+  # Enable the "Develop" menu and the Web Inspector in Safari
   defaults write com.apple.Safari IncludeDevelopMenu -bool true
   defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
   defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
@@ -276,7 +283,7 @@ configure_macos() {
 
   # Disable Spotlight indexing for any volume that gets mounted and has not yet
   # been indexed before.
-  if $isSudoer; then
+  if _isMacSudo; then
     sudo defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
   fi
 
@@ -284,30 +291,30 @@ configure_macos() {
   defaults write com.apple.spotlight orderedItems -array \
     '{"enabled" = 1;"name" = "APPLICATIONS";}' \
     '{"enabled" = 1;"name" = "SYSTEM_PREFS";}' \
-    '{"enabled" = 1;"name" = "DIRECTORIES";}' \
+    '{"enabled" = 1;"name" = "BOOKMARKS";}' \
     '{"enabled" = 1;"name" = "PDF";}' \
     '{"enabled" = 1;"name" = "FONTS";}' \
     '{"enabled" = 1;"name" = "DOCUMENTS";}' \
-    '{"enabled" = 0;"name" = "MESSAGES";}' \
-    '{"enabled" = 0;"name" = "CONTACT";}' \
-    '{"enabled" = 0;"name" = "EVENT_TODO";}' \
     '{"enabled" = 1;"name" = "IMAGES";}' \
-    '{"enabled" = 1;"name" = "BOOKMARKS";}' \
+    '{"enabled" = 1;"name" = "SPREADSHEETS";}' \
+    '{"enabled" = 1;"name" = "DIRECTORIES";}' \
+    '{"enabled" = 1;"name" = "MENU_EXPRESSION";}' \
+    '{"enabled" = 1;"name" = "MENU_CONVERSION";}' \
+    '{"enabled" = 1;"name" = "MENU_DEFINITION";}' \
     '{"enabled" = 0;"name" = "MUSIC";}' \
     '{"enabled" = 0;"name" = "MOVIES";}' \
     '{"enabled" = 0;"name" = "PRESENTATIONS";}' \
-    '{"enabled" = 1;"name" = "SPREADSHEETS";}' \
     '{"enabled" = 0;"name" = "SOURCE";}' \
-    '{"enabled" = 0;"name" = "MENU_DEFINITION";}' \
+    '{"enabled" = 0;"name" = "MESSAGES";}' \
+    '{"enabled" = 0;"name" = "CONTACT";}' \
+    '{"enabled" = 0;"name" = "EVENT_TODO";}' \
     '{"enabled" = 0;"name" = "MENU_OTHER";}' \
-    '{"enabled" = 0;"name" = "MENU_CONVERSION";}' \
-    '{"enabled" = 0;"name" = "MENU_EXPRESSION";}' \
     '{"enabled" = 0;"name" = "MENU_WEBSEARCH";}' \
     '{"enabled" = 0;"name" = "MENU_SPOTLIGHT_SUGGESTIONS";}'
   # Load new settings before rebuilding the index
   killall mds >/dev/null 2>&1
 
-  if $isSudoer; then
+  if _isMacSudo; then
     # Make sure indexing is enabled for the main volume
     sudo mdutil -i on / >/dev/null
     # Rebuild the index from scratch
@@ -338,8 +345,6 @@ configure_macos() {
     "Contacts" \
     "Dock" \
     "Finder" \
-    "Google Chrome Canary" \
-    "Google Chrome" \
     "Photos" \
     "Safari" \
     "SystemUIServer" \
