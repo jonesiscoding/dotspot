@@ -58,6 +58,22 @@ if ! grep -q "LOCAL_SBIN=" "$HOME/.exports.local"; then
   echo "export LOCAL_SBIN=\"$LOCAL_SBIN\"" >> "$HOME/.exports.local"
 fi
 
+# Add the $LOCAL_SBIN & $LOCAL_BIN to the PATH as needed
+if ! echo "$PATH" | grep -q "$LOCAL_SBIN" || ! echo "$PATH" | grep -q "$LOCAL_BIN"; then
+  NEWPATH=""
+  if ! echo "$PATH" | grep -q "$LOCAL_SBIN"; then
+    NEWPATH="$LOCAL_SBIN"
+  fi
+  if ! echo "$PATH" | grep -q "$LOCAL_BIN"; then
+    NEWPATH="$LOCAL_BIN:$NEWPATH"
+  fi
+
+  echo "export PATH=\"$NEWPATH:\$PATH" >> "$HOME/.exports.local"
+fi
+
+# shellcheck source=../../.exports
+source "$HOME/.exports.local"
+
 if _isMac; then
   install_brew || exit 1
   install_brewfile || exit 1
@@ -73,5 +89,7 @@ fi
 
 touch "$HOME/.ssh/config.local"
 chmod 644 "$HOME/.ssh/config.local"
+
+echo "WARNING: You will need to open a new terminal for the settings to take effect!"
 
 exit 0
