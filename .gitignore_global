@@ -21,7 +21,7 @@ Thumbs.db
 /.php_cs.cache
 
 # PHPStorm, VSCode
-macos/.idea/
+.idea/
 .vscode/
 
 # Unison

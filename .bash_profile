@@ -3,7 +3,7 @@
 # Load the shell dotfiles, and then some:
 # * ~/.exports can be used to export `$PATH`.
 # * ~/.local can be used for other settings you don’t want to commit.
-for file in $HOME/.{exports,local,aliases,functions}; do
+for file in $HOME/.{exports,host,aliases,functions}; do
 	if [ -r "$file" ] && [ -f "$file" ]; then
 	  # shellcheck source=.exports
     # shellcheck source=.aliases
