@@ -68,7 +68,7 @@ if ! echo "$PATH" | grep -q "$LOCAL_SBIN" || ! echo "$PATH" | grep -q "$LOCAL_BI
     NEWPATH="$LOCAL_BIN:$NEWPATH"
   fi
 
-  echo "export PATH=\"$NEWPATH:\$PATH" >> "$HOME/.exports.local\""
+  echo "export PATH=\"$NEWPATH:\$PATH\"" >> "$HOME/.exports.local"
 fi
 
 # shellcheck source=../../.exports
