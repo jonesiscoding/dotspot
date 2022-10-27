@@ -52,6 +52,7 @@ function fs() {
 	else
 		local arg=-sh;
 	fi
+	# shellcheck disable=SC2199
 	if [[ -n "$@" ]]; then
 		du $arg -- "$@";
 	else
@@ -145,6 +146,7 @@ function ssh-hostgen() {
   local IUSER
   local IN
   local IPORT
+  local TARGET
 
   if ! grep -q "$1" ~/.ssh/config && ! grep -q "$1" ~/.ssh/config.local; then
     #### Input Variables
@@ -170,6 +172,11 @@ function ssh-hostgen() {
     FQDN="$1.$IDOMAIN"
     # Port
     IPORT=$(echo "$IN" | cut -d ':' -f 2)
+    # Target File
+    TARGET="$HOME/.ssh/config"
+    if [[ -f "${TARGET}.local" ]]; then
+      TARGET="${TARGET}.local"
+    fi
 
     echo "Adding Host '$IHOST' to SSH Config..."
     cat >> ~/.ssh/config.local << EOF
