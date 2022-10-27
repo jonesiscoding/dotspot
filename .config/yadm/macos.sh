@@ -146,11 +146,6 @@ configure_macos() {
   # Finder: show path bar
   defaults write com.apple.finder ShowPathbar -bool true
 
-  # Display full POSIX path as Finder window title (Somewhat annoying in Monterey)
-  if [ "$MAC_MAJOR" -lt "11" ]; then
-    defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
-  fi
-
   # Keep folders on top when sorting by name
   defaults write com.apple.finder _FXSortFoldersFirst -bool true
 
