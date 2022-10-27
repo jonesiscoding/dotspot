@@ -17,9 +17,10 @@ for file in $HOME/.{exports,host,aliases,functions}; do
 done;
 unset file;
 
-# Allow for autocorrection
+# Allow for autocorrection, globbing, cd options
 setopt correctall
 setopt autocd
+setopt nocaseglob
 
 # Don't muck up history
 setopt histignoredups
