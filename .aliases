@@ -72,7 +72,9 @@ alias hide="defaults write com.apple.finder AppleShowAllFiles -bool false && kil
 
 # Merge PDF files, preserving hyperlinks
 # Usage: `mergepdf input{1,2,3}.pdf`
-alias mergepdf='gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=_merged.pdf'
+if which gs > /dev/null 2>&1; then
+  alias mergepdf='gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=_merged.pdf'
+fi
 
 # Disable Spotlight
 alias spotoff="sudo mdutil -a -i off"
