@@ -53,11 +53,11 @@ function fs() {
 		local arg=-sh;
 	fi
 	# shellcheck disable=SC2199
-	if [[ -n "$@" ]]; then
-		du $arg -- "$@";
-	else
-		du $arg .[^.]* ./*;
-	fi;
+	if [[ -n $@ ]]; then
+  du $arg -- "$@"
+else
+  du $arg .[^.]* ./*
+fi;
 }
 
 # Use Git’s colored diff when available
@@ -139,53 +139,46 @@ function o() {
 }
 
 function ssh-hostgen() {
-  local IDOMAIN
-  local IHOST
-  local FQDN
-  local PLATFORM
-  local IUSER
-  local IN
-  local IPORT
-  local TARGET
+  local iDomain iHost iUser iPort in target platform fqdn
 
   if ! grep -q "$1" ~/.ssh/config && ! grep -q "$1" ~/.ssh/config.local; then
     #### Input Variables
-    IN="$1"
+    in="$1"
     # Username
-    IUSER=$(echo "$IN" | cut -d '@' -f 1)
-    [ -z "$IUSER" ] && [ -n "$SSH_USER" ] && IUSER="$SSH_USER"
-    [ -z "$IUSER" ] && IUSER="$USER"
+    iUser=$(echo "$in" | cut -d '@' -f 1)
+    [ -z "$iUser" ] && [ -n "$SSH_USER" ] && iUser="$SSH_USER"
+    [ -z "$iUser" ] && iUser="$USER"
     # Host
-    IHOST=$(echo "$IN" | cut -d '@' -f 2)
+    iHost=$(echo "$in" | cut -d '@' -f 2)
     # Domain
-    IDOMAIN=$(echo "$IN" | cut -d '.' -f 2- | grep "\.")
-    if [ -z "$IDOMAIN" ]; then
-      PLATFORM=$(uname -s)
-      if [ "$PLATFORM" == "Darwin" ]; then
-        IDOMAIN=$(scutil --get HostName | cut -d '.' -f 2- | grep "\.")
+    iDomain=$(echo "$in" | cut -d '.' -f 2- | grep "\.")
+    if [ -z "$iDomain" ]; then
+      platform=$(uname -s)
+      if [ "$platform" == "Darwin" ]; then
+        iDomain=$(scutil --get HostName | cut -d '.' -f 2- | grep "\.")
       elif [ -n "$HOSTNAME" ]; then
-        IDOMAIN=$(echo "$HOSTNAME" | cut -d '.' -f 2- | grep "\.")
+        iDomain=$(echo "$HOSTNAME" | cut -d '.' -f 2- | grep "\.")
       fi
     fi
-    [ -z "$IDOMAIN" ] && IDOMAIN=".local"
+    [ -z "$iDomain" ] && iDomain=".local"
     # FQDN
-    FQDN="$1.$IDOMAIN"
+    fqdn="$1.$iDomain"
     # Port
-    IPORT=$(echo "$IN" | cut -d ':' -f 2)
+    iPort=$(echo "$in" | cut -d ':' -f 2)
     # Target File
-    TARGET="$HOME/.ssh/config"
-    if [[ -f "${TARGET}.local" ]]; then
-      TARGET="${TARGET}.local"
+    target="$HOME/.ssh/config"
+    if [[ -f "${target}.local" ]]; then
+      target="${target}.local"
     fi
 
-    echo "Adding Host '$IHOST' to SSH Config..."
+    echo "Adding Host '$iHost' to SSH Config..."
     cat >> ~/.ssh/config.local << EOF
-Host $IHOST
-    Hostname $FQDN
-    User $IUSER
-    Port $IPORT
+Host $iHost
+    Hostname $fqdn
+    User $iUser
+    Port $iPort
 EOF
   else
-    echo "Host '$IHOST' is already present in SSH Config."
+    echo "Host '$iHost' is already present in SSH Config."
   fi
 }
