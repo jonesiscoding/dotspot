@@ -54,10 +54,10 @@ function fs() {
 	fi
 	# shellcheck disable=SC2199
 	if [[ -n $@ ]]; then
-  du $arg -- "$@"
-else
-  du $arg .[^.]* ./*
-fi;
+    du $arg -- "$@"
+  else
+    du $arg .[^.]* ./*
+  fi;
 }
 
 # Use Git’s colored diff when available
