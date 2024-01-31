@@ -141,15 +141,17 @@ function o() {
 function ssh-hostgen() {
   local iDomain iHost iUser iPort in target platform fqdn
 
-  if ! grep -q "$1" ~/.ssh/config && ! grep -q "$1" ~/.ssh/config.local; then
-    #### Input Variables
-    in="$1"
+  # Input
+  in="$1"
+  # Host
+  iHost=$(echo "$in" | cut -d '@' -f 2)
+  if ! grep -q "$iHost" ~/.ssh/config && ! grep -q "$iHost" ~/.ssh/config.local; then
     # Username
-    iUser=$(echo "$in" | cut -d '@' -f 1)
+    if echo "$in" | grep "@"; then
+      iUser=$(echo "$in" | cut -d '@' -f 1)
+    fi
     [ -z "$iUser" ] && [ -n "$SSH_USER" ] && iUser="$SSH_USER"
     [ -z "$iUser" ] && iUser="$USER"
-    # Host
-    iHost=$(echo "$in" | cut -d '@' -f 2)
     # Domain
     iDomain=$(echo "$in" | cut -d '.' -f 2- | grep "\.")
     if [ -z "$iDomain" ]; then
@@ -182,6 +184,6 @@ Host $iHost
     Port $iPort
 EOF
   else
-    echo "Host '$1' is already present in SSH Config."
+    echo "Host '$iHost' is already present in SSH Config."
   fi
 }
