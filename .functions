@@ -164,7 +164,10 @@ function ssh-hostgen() {
     # FQDN
     fqdn="$1.$iDomain"
     # Port
-    iPort=$(echo "$in" | cut -d ':' -f 2)
+    iPort=22
+    if echo "$in" | grep ":"; then
+      iPort=$(echo "$in" | cut -d ':' -f 2)
+    fi
     # Target File
     target="$HOME/.ssh/config"
     if [[ -f "${target}.local" ]]; then
