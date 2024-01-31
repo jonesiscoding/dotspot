@@ -147,7 +147,7 @@ function ssh-hostgen() {
   iHost=$(echo "$in" | cut -d '@' -f 2)
   if ! grep -q "$iHost" ~/.ssh/config && ! grep -q "$iHost" ~/.ssh/config.local; then
     # Username
-    if echo "$in" | grep "@"; then
+    if echo "$in" | grep -q "@"; then
       iUser=$(echo "$in" | cut -d '@' -f 1)
     fi
     [ -z "$iUser" ] && [ -n "$SSH_USER" ] && iUser="$SSH_USER"
@@ -167,7 +167,7 @@ function ssh-hostgen() {
     fqdn="$1.$iDomain"
     # Port
     iPort=22
-    if echo "$in" | grep ":"; then
+    if echo "$in" | grep -q ":"; then
       iPort=$(echo "$in" | cut -d ':' -f 2)
     fi
     # Target File
