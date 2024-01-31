@@ -1,4 +1,4 @@
-# shellcheck shell=zsh
+# shellcheck shell=sh
 
 # Load the shell dotfiles, and then some:
 # * ~/.exports can be used to export `$PATH`.
@@ -6,8 +6,8 @@
 for file in $HOME/.{exports,host,aliases,functions}; do
 	if [ -r "$file" ] && [ -f "$file" ]; then
 	  # shellcheck source=.exports
-    # shellcheck source=.aliases
-    # shellcheck source=.functions
+      # shellcheck source=.aliases
+      # shellcheck source=.functions
 	  source "$file";
 	  if [ -r "$file.local" ] && [ -f "$file.local" ]; then
 	    # shellcheck disable=SC1090
