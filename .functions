@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # Create a new directory and enter it
 function mkd() {
@@ -154,7 +154,7 @@ function ssh-hostgen() {
     iDomain=$(echo "$in" | cut -d '.' -f 2- | grep "\.")
     if [ -z "$iDomain" ]; then
       platform=$(uname -s)
-      if [ "$platform" == "Darwin" ]; then
+      if [ "$platform" = "Darwin" ]; then
         iDomain=$(scutil --get HostName | cut -d '.' -f 2- | grep "\.")
       elif [ -n "$HOSTNAME" ]; then
         iDomain=$(echo "$HOSTNAME" | cut -d '.' -f 2- | grep "\.")
@@ -179,6 +179,6 @@ Host $iHost
     Port $iPort
 EOF
   else
-    echo "Host '$iHost' is already present in SSH Config."
+    echo "Host '$1' is already present in SSH Config."
   fi
 }
