@@ -25,6 +25,7 @@ autoload finder
 autoload fs
 autoload ssh-keygen
 autoload ssh-copy-id
+autoload git-config
 
 # Prompt in Repos
 autoload -Uz vcs_info
