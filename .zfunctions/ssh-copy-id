@@ -20,6 +20,8 @@ function ssh-copy-id() {
       fi
       return $retval
     fi
+
+    return 0
   fi
 
   /usr/bin/ssh-copy-id "$@"
