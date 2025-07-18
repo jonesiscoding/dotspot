@@ -1,0 +1,29 @@
+#!/usr/bin/env zsh
+
+function dot {
+   /usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME $@
+}
+
+cd "$HOME" || exit 1
+if [ -d "$HOME/.dot" ]; then
+  echo "Run the following command to reinstall: "
+  echo "rm -Rf \"\$HOME/.dot\" && $SHELL -c \"\$(curl -fsSL https://raw.githubusercontent.com/jonesiscoding/dotspot/HEAD/.config/install)\""
+  if [ -f "/usr/bin/pbcopy" ]; then
+    echo "rm -Rf \"\$HOME/.dot\" && $SHELL -c \"\$(curl -fsSL https://raw.githubusercontent.com/jonesiscoding/dotspot/HEAD/.config/install)\"" | pbcopy
+  fi
+  exit 1
+fi
+
+git clone --bare http://github.com/jonesiscoding/dotspot/dotspot.git $HOME/.dot
+dot checkout
+if [ $? = 0 ]; then
+  echo "Checked out jonesiscoding/dotfiles.";
+else
+  mkdir -p .dot-backup
+  echo "Moving pre-existing dot files to $HOME/.dot-backup";
+  dot checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} mv -R {} .dot-backup/{}
+fi;
+
+dot config status.showUntrackedFiles no
+dot config pull.rebase true
+dot config rebase.autoStash true
