@@ -24,7 +24,7 @@ function ssh-keygen() {
     # Create config.github
     configDir="$HOME/.ssh/config.d"
     configFile="$configDir/config.github"
-    [ ! -d "$configDir" ] && mkdir -p "$configDir" && chmod 644 "$configDir"
+    [ ! -d "$configDir" ] && mkdir -p "$configDir" && chmod 744 "$configDir"
     if [ ! -f "$configFile" ] || [ -z "$(cat "$configFile")" ]; then
       cat >> "$configFile" <<EOF
 Host github.com
