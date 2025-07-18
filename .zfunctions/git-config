@@ -8,7 +8,7 @@
 # @stdout string Displays saved values
 # @exitcode 0 Success
 # @exitcode 1 Failure
-function git-autoconfig() {
+function git-config() {
   local gitEmail gitName testName testEmail isName isEmail xGh isToken
 
   while [ "$1" != "" ]; do
@@ -67,8 +67,8 @@ function git-autoconfig() {
   fi
 
   echo ""
-  printf "%s: %s\n" "$(out::info "Git Name")" "$(git config --global --get user.name)"
-  printf "%s: %s\n" "$(out::info "Git Email")" "$(git config --global --get user.email)"
+  printf "%s: %s\n" "$(echo "Git Name")" "$(git config --global --get user.name)"
+  printf "%s: %s\n" "$(echo "Git Email")" "$(git config --global --get user.email)"
   echo ""
   echo "" "To edit these values, edit ~/.gitconfig"
   echo ""
