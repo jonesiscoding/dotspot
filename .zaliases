@@ -102,7 +102,7 @@ alias ctop="top -stats pid,command,cpu,idlew,power -o cpu -d -n 10"
 alias ptop="top -stats pid,command,cpu,idlew,power -o power -d -n 10"
 
 # Easy log tailing
-echo "$SHELL" && grep -q "zsh" && alias -s log="tail -f"
+echo "$SHELL" | grep -q "zsh" && alias -s log="tail -f"
 
 # @description Download file and save it with filename of remote file
 # @arg $1 url The URL to the remote file
