@@ -3,7 +3,7 @@
 function ssh-keygen() {
   local ghAlgo ghEmail keyGithub configDir configFile
 
-  if printf "%s\n" "$@" | grep -qxF "--github"; then
+  if printf "%s\n" "$@" | /usr/bin/grep -q "\-\-github"; then
     while [ "$1" != "" ]; do
       # Check flags
       case "$1" in

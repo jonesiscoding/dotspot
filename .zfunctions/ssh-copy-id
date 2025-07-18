@@ -3,7 +3,7 @@
 function ssh-copy-id() {
   local retval keyGithub xGh
 
-  if printf "%s\n" "$@" | grep -qxF "--github"; then
+  if printf "%s\n" "$@" | /usr/bin/grep -q "\-\-github"; then
     xGh="/opt/homebrew/gin/gh"
     [ -z "$xGh" ] && xGh="/usr/local/bin/gh"
     [ -z "$xGh" ] && return 1
