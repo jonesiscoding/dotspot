@@ -1,10 +1,8 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 alias dl='cd $HOME/Downloads'
 alias dt='cd $HOME/Desktop'
-[ -n "$DEV_DIR" ] && alias dev="cd \"\$DEV_DIR\""
-[ -n "$LOCAL_BIN" ] && alias bin="cd \"\$LOCAL_BIN\""
-[ -n "$LOCAL_SBIN" ] && alias sbin="cd \"\$LOCAL_SBIN\""
+[ -n "$PATH_DEV" ] && alias dev='cd "$PATH_DEV"'
 
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
@@ -94,19 +92,15 @@ alias map="xargs -n1"
 alias reload='exec "${SHELL}" -l'
 
 # Print each PATH entry on a separate line
-alias path='echo -e "${PATH}" | tr ":" "\n"'
+alias path='echo -e "${PATH}" | /usr/bin/tr ":" "\n"'
 
-# Top sorted by CPU usage
-alias ctop="top -F -R -o cpu"
+# Top sorted by usage
+alias ctop="top -stats pid,command,cpu,idlew,power -o cpu -d -n 10"
+alias ptop="top -stats pid,command,cpu,idlew,power -o power -d -n 10"
 
-#### Application Specific Aliases
+# Easy log tailing
+echo "$SHELL" && grep -q "zsh" && alias -s log="tail -f"
 
-# Sublime
-if [ -f /Applications/Sublime\ Text.app/Contents/Info.plist ]; then
-  alias subl="open -a /Applications/Sublime\ Text.app"
-fi
-
-# VSCode
-if [ -f /Applications/Visual\ Studio\ Code.app/Contents/Info.plist ]; then
-  alias code="open -a /Applications/Visual\ Studio\ Code.app"
-fi
+# @description Download file and save it with filename of remote file
+# @arg $1 url The URL to the remote file
+alias get="curl -O -L"

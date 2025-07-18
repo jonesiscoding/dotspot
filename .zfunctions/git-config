@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+# shellcheck disable=SC2120
+# @description Sets up the global user.name, user.email, and GitHub authentication
+# @option --name <name>   The name to use (defaults to name of user>
+# @option --email <email> The Email address to use (defaults to username@<domain portion of hostname>)
+# @option --token <token> Sets the GH_TOKEN environment variable
+# @stdout string Displays saved values
+# @exitcode 0 Success
+# @exitcode 1 Failure
+function git-autoconfig() {
+  local gitEmail gitName testName testEmail isName isEmail xGh isToken
+
+  while [ "$1" != "" ]; do
+    # Check flags
+    # bashsupport disable=BP2001
+    case "$1" in
+      --name )  isName=true; gitName="$2";  shift;   ;;
+      --email ) isEmail=true; gitEmail="$2"; shift;   ;;
+      --token ) isToken=true; GH_TOKEN="$2"; shift;   ;;
+    esac
+    shift # move to next kv pair
+  done
+
+  testName=$(git config --global --get user.name)
+  testEmail=$(git config --global --get user.email)
+
+  if [ -z "$testEmail" ] && [ -z "$gitEmail" ]; then
+    isEmail=true
+    gitEmail="$USER@$(hostname -f | awk -F '.' '{ printf("%s.%s", $(NF - 1), $NF) }')"
+  fi
+
+  if [ -z "$testName" ] && [ -z "$gitName" ]; then
+    isName=true
+    gitName=$(/usr/bin/dscl . -read "/Users/$USER" RealName | tail -1 | /usr/bin/sed 's/^ //')
+  fi
+
+  # Set the User
+  if $isName; then
+    if [ -z "$testName" ]; then
+      git config --global --add user.name "$gitName" || return $?;
+    else
+      git config --global --replace-all user.email "$gitEmail" || return $?;
+    fi
+  fi
+
+  if $isEmail; then
+    if [ -z "$testEmail" ]; then
+      git config --global --add user.email "$gitEmail" || return $?;
+    else
+      git config --global --replace-all user.email "$gitEmail" || return $?;
+    fi
+  fi
+
+  # Set Up GH Auth
+  if [ -n "$GH_TOKEN" ]; then
+    xGh="/opt/homebrew/gin/gh"
+    [ -z "$xGh" ] && xGh="/usr/local/bin/gh"
+    [ -z "$xGh" ] && return 1
+
+    if $isToken; then
+      echo "GH_TOKEN=\"$GH_TOKEN\"" >> "$HOME/.zshenv"
+      GH_TOKEN="$GH_TOKEN" $xGh auth setup-git >/dev/null 2>&1
+    else
+      $xGh auth setup-git >/dev/null 2>&1
+    fi
+  fi
+
+  echo ""
+  printf "%s: %s\n" "$(out::info "Git Name")" "$(git config --global --get user.name)"
+  printf "%s: %s\n" "$(out::info "Git Email")" "$(git config --global --get user.email)"
+  echo ""
+  echo "" "To edit these values, edit ~/.gitconfig"
+  echo ""
+}

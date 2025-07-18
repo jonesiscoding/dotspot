@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+
+# @description Run `dig` and display the most useful info
+# @arg $1 string Hostname
+# @stdout Dig Results
+function digga() {
+	dig +nocmd "$1" any +multiline +noall +answer;
+}

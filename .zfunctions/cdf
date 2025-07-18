@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+# @description Change working directory to the top-most Finder window location
+# @noargs
+function cdf() { # short for `cdfinder`
+	cd "$(osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)')" || return;
+}

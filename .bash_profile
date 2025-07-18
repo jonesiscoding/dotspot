@@ -1,22 +1,5 @@
 # shellcheck shell=bash
 
-# Load the shell dotfiles, and then some:
-# * ~/.exports can be used to export `$PATH`.
-# * ~/.local can be used for other settings you don’t want to commit.
-for file in $HOME/.{exports,host,aliases,functions}; do
-	if [ -r "$file" ] && [ -f "$file" ]; then
-	  # shellcheck source=.exports
-    # shellcheck source=.aliases
-    # shellcheck source=.functions
-	  source "$file";
-	  if [ -r "$file.local" ] && [ -f "$file.local" ]; then
-	    # shellcheck disable=SC1090
-	    source "$file.local"
-	  fi
-	fi
-done;
-unset file;
-
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob;
 
@@ -25,13 +8,6 @@ shopt -s histappend;
 
 # Autocorrect typos in path names when using `cd`
 shopt -s cdspell;
-
-# Enable some Bash 4 features when possible:
-# * `autocd`, e.g. `**/qux` will enter `./foo/bar/baz/qux`
-# * Recursive globbing, e.g. `echo **/*.txt`
-for option in autocd globstar; do
-	shopt -s "$option" 2> /dev/null;
-done;
 
 # Add tab completion for many Bash commands
 if which brew &> /dev/null && [ -r "$(brew --prefix)/etc/profile.d/bash_completion.sh" ]; then
@@ -44,11 +20,10 @@ elif [ -f /etc/bash_completion ]; then
 	source /etc/bash_completion;
 fi;
 
-# Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
-[ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh;
+# Use ZSH Aliases (requires ZSH specific aliases to be handled correctly in .zaliases)
+source .zaliases
 
-# Add tab completion for SSH hostnames based on ~/.ssh/config.local, ignoring wildcards
-[ -e "$HOME/.ssh/config.local" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh;
-
-# Add `killall` tab completion for common apps
-complete -o "nospace" -W "Contacts Calendar Dock Finder Safari SystemUIServer Terminal" killall;
+# Use ZSH Environment variables
+set -a
+source .zshenv
+set +a

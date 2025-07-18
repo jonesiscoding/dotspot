@@ -1,0 +1,39 @@
+#!/usr/bin/zsh
+
+function ssh-keygen() {
+  local ghAlgo ghEmail keyGithub configDir configFile
+
+  if printf "%s\n" "$@" | grep -qxF "--github"; then
+    while [ "$1" != "" ]; do
+      # Check flags
+      case "$1" in
+        -t )  ghAlgo="$2";    shift;   ;;
+        -C )  ghEmail="$2";   shift;   ;;
+        -f )  keyGithub="$2"; shift;   ;;
+      esac
+      shift # move to next kv pair
+    done
+    [ -z "$ghAlgo" ] && ghAlgo="$GH_ALGORITHM"
+    [ -z "$ghAlgo" ] && ghAlgo="ed25519"
+    [ -z "$ghEmail" ] && ghEmail="$GH_EMAIL"
+    [ -z "$ghEmail" ] && ghEmail="$USER@$(hostname -f | awk -F '.' '{ printf("%s.%s", $(NF - 1), $NF) }')"
+    [ -z "$keyGithub" ] && keyGithub="$HOME/.ssh/id_${ghAlgo}_github"
+
+    /usr/bin/ssh-keygen -t "$ghAlgo" -N '' -C "$ghEmail" -f "$keyGithub" || { >&2 echo "ERROR: Could not create '$keyGithub'" && return 1; }
+
+    # Create config.github
+    configDir="$HOME/.ssh/config.d"
+    configFile="$configDir/config.github"
+    [ ! -d "$configDir" ] && mkdir -p "$configDir" && chmod 644 "$configDir"
+    if [ ! -f "$configFile" ] || [ -z "$(cat "$configFile")" ]; then
+      cat >> "$configFile" <<EOF
+Host github.com
+  HostName github.com
+  IdentityFile ${keyGithub}
+EOF
+    fi
+    return 0
+  fi
+
+  /usr/bin/ssh-keygen "$@"
+}

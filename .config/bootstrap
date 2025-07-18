@@ -1,0 +1,123 @@
+#!/usr/bin/env zsh
+
+# shellcheck source=./functions/macos.sh
+source "./functions/macos.sh"
+
+try_local() {
+  local dir
+
+  dir="$1"
+
+  if [ -z "$dir" ]; then
+    return 1
+  fi
+
+  if [ ! -d "$1" ]; then
+    /bin/mkdir -p "$1/bin" || return 1
+    /bin/mkdir -p "$1/sbin" || return 1
+  fi
+
+  if [ ! -d "$1/bin" ]; then
+    /bin/mkdir -p "$1/bin" || return 1
+  fi
+
+  if [ ! -d "$1/sbin" ]; then
+    /bin/mkdir -p "$1/sbin" || return 1
+  fi
+
+  [ ! -w "$1/bin" ] && return 1
+  [ ! -w "$1/sbin" ] && return 1
+
+  LOCAL="$1"
+
+  return 0
+}
+
+## region ###################################### Input Handling
+
+isBrewFile=false
+isBrew=false
+isOs=false
+isSsh=false
+isEnv=false
+while [ "$1" != "" ]; do
+  # Check flags
+  case "$1" in
+    --brew )               isBrew=true;                   ;;
+    --brewfile )           isBrewFile=true;               ;;
+    --prefs )              isOs=true;                    ;;
+    --ssh )                isSsh=true;                   ;;
+    --env )                isEnv=true;                   ;;
+  esac
+  shift # move to next kv pair
+done
+
+if /usr/bin/uname -s | grep -v -q "Darwin"; then
+  isBrew=false
+  isBrewFile=false
+  isOs=false
+fi
+
+if ! _isMacSudo; then
+  isBrew=false
+  isBrewFile=false
+fi
+
+if $isBrew; then
+  xBrew=$(which brew)
+  [ -f "$xBrew" ] && isBrew=false
+  $isBrew && xBrew="/opt/homebrew/bin/brew" && [ -f "$xBrew" ] && isBrew=false
+  $isBrew && xBrew="/usr/local/bin/brew" && [ -f "$xBrew" ] && isBrew=false
+fi
+
+## endregion ################################### Input Handling
+
+## region ###################################### Environment
+
+if $isEnv; then
+  zshenv="$HOME/.zshenv"
+
+  # Determine if user has write access to /usr/local/bin
+  try_local "$LOCAL" || try_local "/usr/local" || try_local "/opt/local" || try_local "${HOME}/.local" || exit 1
+
+  # Add the $LOCAL paths $PATH as needed
+  isLocalBin=$(echo "$PATH" | grep -q "$LOCAL/bin")
+  isLocalSbin=$(echo "$PATH" | grep -q "$LOCAL/sbin")
+  if ! $isLocalBin || ! $isLocalSbin; then
+    newPath=""
+    ! $isLocalBin; newPath="$LOCAL/bin:$newPath"
+    ! $isLocalSbin; newPath="$LOCAL/sbin:$newPath"
+
+    echo "export PATH=\"$newPath\$PATH\"" >> "$zshenv"
+  fi
+
+  # Make Developer Directory if not Present
+  /bin/mkdir -p "$HOME/Developer"
+  echo "PATH_DEV=\"\${HOME}/Developer\"" >> $zshenv;
+
+  # Set Editor
+  echo "GIT_EDITOR=nano" >> "$zshenv"
+
+  # Set History File
+  echo "HISTFILE=\"\${ZDOTDIR:-\$HOME}/.zsh_history\"" >> "$zshenv"
+
+  # shellcheck disable=SC1090
+  source "$zshenv"
+fi
+
+! $isBrew || install_brew || exit 1
+! $isBrewFile || install_brewfile || exit 1
+! $isOs || configure_macos || exit 1
+
+# Create SSH Key
+if $isSsh; then
+  if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
+    /usr/bin/ssh-keygen -t ed25519
+  fi
+
+  eval "$(ssh-agent -s)"
+  /bin/mkdir "$HOME/.ssh/config.d"
+fi
+
+echo "WARNING: You will need to open a new terminal for the settings to take effect!"
+exit 0

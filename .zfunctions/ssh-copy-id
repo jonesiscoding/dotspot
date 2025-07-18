@@ -1,0 +1,27 @@
+#!/usr/bin/env zsh
+
+function ssh-copy-id() {
+  local retval keyGithub xGh
+
+  if printf "%s\n" "$@" | grep -qxF "--github"; then
+    xGh="/opt/homebrew/gin/gh"
+    [ -z "$xGh" ] && xGh="/usr/local/bin/gh"
+    [ -z "$xGh" ] && return 1
+
+    keyGithub=$(ssh -G github.com | grep "identityfile" | awk '{ print $2 }')
+    [ -z "$keyGithub" ] && [ -n "$GH_ALGORITHM" ] && keyGithub="id_${GH_ALGORITHM}_github"
+    [ -z "$keyGithub" ] && keyGithub="${HOME}/.ssh/$keyGithub" ]
+    [ ! -f "$HOME/.ssh/$keyGithub.pub" ] && return 1
+
+    if ! $xGh ssh-key add "${keyGithub}.pub" -t "$(/bin/hostname)" > "/tmp/gh-$USER" 2>&1; then
+      retval="$?"
+      if ! /usr/bin/grep -q "key is already in use" "/tmp/gh-$USER"; then
+        cat "/tmp/gh-$USER"
+      fi
+      return $retval
+    fi
+  fi
+
+  /usr/bin/ssh-copy-id "$@"
+}
+
