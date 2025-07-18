@@ -4,6 +4,9 @@ alias dl='cd $HOME/Downloads'
 alias dt='cd $HOME/Desktop'
 [ -n "$PATH_DEV" ] && alias dev='cd "$PATH_DEV"'
 
+# Manage DotFiles with git
+alias dot='/usr/bin/git --git-dir=$HOME/.dot/ --work-tree=$HOME'
+
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
 	colorflag="--color"
