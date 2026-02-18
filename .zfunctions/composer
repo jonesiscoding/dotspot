@@ -1,0 +1,24 @@
+#!/usr/bin/env zsh
+
+function composer() {
+  if ! which composer > /dev/null 2>&1; then
+    echo "The composer executable is not installed!"
+    exit 1
+  fi
+
+  if composer "$@"; then
+    if uname | grep "Darwin"; then
+      # Rename to avoid iCloud Sync
+      if [ -d vendor ] && [ ! -L vendor ]; then
+        mv vendor vendor.nosync
+        ln -s vendor.nosync vendor
+      fi
+      # Exclude from Time Machine
+      if ! tmutil isexcluded "${path}" | grep -Fq '[Excluded]'; then
+        tmutil addexclusion "$(pwd)/vendor.nosync"
+      fi
+      # Hide from View
+      chflags hidden vendor.nosync
+    fi
+  fi
+}

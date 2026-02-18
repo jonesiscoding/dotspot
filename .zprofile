@@ -26,6 +26,7 @@ autoload fs
 autoload ssh-keygen
 autoload ssh-copy-id
 autoload git-config
+autoload composer
 
 # Prompt in Repos
 autoload -Uz vcs_info
