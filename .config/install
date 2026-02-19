@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 repo="jonesiscoding/dotspot"
-repoUrl="http://github.com/${repo}.git"
+repoUrl="https://github.com/${repo}.git"
 
 function dot {
    /usr/bin/git --git-dir=$HOME/.dot/ --work-tree=$HOME $@
