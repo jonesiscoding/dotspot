@@ -1,5 +1,8 @@
 #!/usr/bin/env zsh
 
+repo="jonesiscoding/dotspot"
+repoUrl="http://github.com/${repo}.git"
+
 function dot {
    /usr/bin/git --git-dir=$HOME/.dot/ --work-tree=$HOME $@
 }
@@ -7,17 +10,17 @@ function dot {
 cd "$HOME" || exit 1
 if [ -d "$HOME/.dot" ]; then
   echo "Run the following command to reinstall: "
-  echo "rm -Rf \"\$HOME/.dot\" && $SHELL -c \"\$(curl -fsSL https://raw.githubusercontent.com/jonesiscoding/dotspot/HEAD/.config/install)\""
+  echo "rm -Rf \"\$HOME/.dot\" && $SHELL -c \"\$(curl -fsSL https://raw.githubusercontent.com/${repo}/HEAD/.config/install)\""
   if [ -f "/usr/bin/pbcopy" ]; then
-    echo "rm -Rf \"\$HOME/.dot\" && $SHELL -c \"\$(curl -fsSL https://raw.githubusercontent.com/jonesiscoding/dotspot/HEAD/.config/install)\"" | pbcopy
+    echo "rm -Rf \"\$HOME/.dot\" && $SHELL -c \"\$(curl -fsSL https://raw.githubusercontent.com/${repo}/HEAD/.config/install)\"" | pbcopy
   fi
   exit 1
 fi
 
-git clone --bare http://github.com/jonesiscoding/dotspot/dotspot.git $HOME/.dot
+git clone --bare $repoUrl $HOME/.dot
 dot checkout
 if [ $? = 0 ]; then
-  echo "Checked out jonesiscoding/dotfiles.";
+  echo "Checked out ${repo}.";
 else
   mkdir -p .dot-backup
   echo "Moving pre-existing dot files to $HOME/.dot-backup";
