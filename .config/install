@@ -24,7 +24,7 @@ if [ $? = 0 ]; then
 else
   mkdir -p .dot-backup
   echo "Moving pre-existing dot files to $HOME/.dot-backup";
-  dot checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} mv -R {} .dot-backup/{}
+  dot checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | tar czf ".dot-backup/dot-$(date +%Y%m%d-%H%M%S).tar.gz" --null -T -
 fi;
 
 dot config status.showUntrackedFiles no
