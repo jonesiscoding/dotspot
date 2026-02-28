@@ -1,12 +1,13 @@
 #!/usr/bin/env zsh
 
 function composer() {
-  if ! which composer > /dev/null 2>&1; then
+  local xCMP=$(/usr/bin/which composer)
+  if [ -z "$xCMP" ]; then
     echo "The composer executable is not installed!"
     exit 1
   fi
 
-  if composer "$@"; then
+  if $xCMP "$@"; then
     if uname | grep "Darwin"; then
       # Rename to avoid iCloud Sync
       if [ -d vendor ] && [ ! -L vendor ]; then
