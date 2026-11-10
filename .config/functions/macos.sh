@@ -46,7 +46,7 @@ configure_macos() {
   defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
 
   # Remove duplicates in the “Open With” menu (also see `lscleanup` alias)
-  /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
+  /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -r -domain local -domain system -domain user
 
   # Disable automatic capitalization as it’s annoying when typing code
   defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
