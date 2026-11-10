@@ -49,7 +49,6 @@ function install_brewfile() {
   # shellcheck disable=SC2002
   BREWFILE=$(cat "$HOME/.Brewfile" | xargs)
   if [ -f "$HOME/.Brewfile" ] && [ -n "$BREWFILE" ]; then
-    BREW_BIN=$(_brewPath)
     echo "Updating Homebrew bundle..."
     echo $BIGLINE
 
