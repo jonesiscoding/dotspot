@@ -1,5 +1,7 @@
 # shellcheck shell=bash
 
+[[ -z "$BREW_BIN" ]] && [ -f "/opt/homebrew/bin/brew" ]] && BREW_BIN="/opt/homebrew/bin/brew"
+[[ -z "$BREW_BIN" ]] && [[ -f "/usr/local/bin/brew" ]] && BREW_BIN="/usr/local/bin/brew"
 
 function _isMacSudo() {
   if [ "$HOME" != "/var/root" ]; then
@@ -39,14 +41,9 @@ function install_brewfile() {
 
   BIGLINE="-----------------------------------"
 
-  if ! _isBrewing; then
+  if [[ -z "$BREW_BIN" ]]; then
     echo "ERROR: Cannot install items in .Brewfile.  Homebrew is not installed."
     return 1
-  fi
-
-  if _skip "Brewfile"; then
-    echo "Skipping Brewfile (present in .skip)"
-    return 0
   fi
 
   # shellcheck disable=SC2002
