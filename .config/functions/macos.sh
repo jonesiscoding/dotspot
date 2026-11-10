@@ -348,8 +348,7 @@ configure_macos() {
     "Finder" \
     "Photos" \
     "Safari" \
-    "SystemUIServer" \
-    "Terminal"; do
+    "SystemUIServer"; do
     killall "${app}" &>/dev/null
   done
 
