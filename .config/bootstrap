@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # shellcheck source=./functions/macos.sh
-source "./functions/macos.sh"
+source "$HOME/.config/functions/macos.sh"
 
 try_local() {
   local dir
