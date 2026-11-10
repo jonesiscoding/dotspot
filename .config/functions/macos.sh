@@ -25,6 +25,8 @@ configure_macos() {
   MAC_VERSION=$(sw_vers -productVersion)
   MAC_MAJOR=$(echo "$MAC_VERSION" | cut -d'.' -f1)
   MAC_MINOR=$(echo "$MAC_VERSION" | cut -d'.' -f2)
+  [[ "$MAC_MAJOR" -ge "26" ]] && isTahoe=true
+  [[ "$MAC_MAJOR" -ge "27" ]] && isGate=true
 
   ### endregion ######################################### Prep
 
@@ -35,8 +37,10 @@ configure_macos() {
   defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
 
   # Expand print panel by default
-  defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
-  defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
+  if ! $isTahoe; then
+    defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
+    defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
+  fi
 
   # Automatically quit printer app once the print jobs complete
   defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
@@ -66,8 +70,8 @@ configure_macos() {
   # Trackpad: enable tap to click for this user and for the login screen
   defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
   defaults write com.apple.AppleMultitouch.trackpad Clicking -bool true
-  defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
   defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+  ! $isTahoe && defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
   # Trackpad: disable force touch, set click thresholds, disable launchpad, rotate
   defaults write com.apple.AppleMultitouch.trackpad ForceSuppressed -bool true
@@ -78,9 +82,17 @@ configure_macos() {
   defaults write com.apple.AppleMultitouch.trackpad TrackpadPinch -int 0
   defaults write com.apple.AppleMultitouch.trackpad TrackpadRotate -int 0
 
-  # Enable Three Finger Drag
-  defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool true
-  defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
+  if ! $isTahoe; then
+    # Enable Three Finger Drag
+    defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool true
+    defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
+  else
+    # Core logic required to cleanly force Three Finger Drag in modern macOS versions
+    defaults write com.apple.AppleMultitouchTrackpad Dragging -bool false
+    defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
+    defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool true
+    defaults write com.apple.universalaccess "com.apple.custommenu.apps" -array-add "com.apple.AppleMultitouchTrackpad"
+  fi
 
   ### endregion ######################################### Input Devices
 
@@ -102,11 +114,15 @@ configure_macos() {
   ### region ############################################ Display
 
   # Require password immediately after sleep or screen saver begins
-  defaults write com.apple.screensaver askForPassword -int 1
-  defaults write com.apple.screensaver askForPasswordDelay -int 0
+  if ! $isTahoe; then
+    defaults write com.apple.screensaver askForPassword -int 1
+    defaults write com.apple.screensaver askForPasswordDelay -int 0
+  elif _isMacSudo; then
+    sudo sysadminctl -screenLock immediate -password -
+  fi
 
-  # Save screenshots to the desktop
-  defaults write com.apple.screencapture location -string "${HOME}/Desktop"
+  # Save screenshots to Pictures
+  defaults write com.apple.screencapture location -string "${HOME}/Pictures"
 
   # Save screenshots in JPG format (other options: BMP, GIF, JPG, PDF, TIFF)
   defaults write com.apple.screencapture type -string "jpg"
@@ -114,16 +130,16 @@ configure_macos() {
   # Disable shadow in screenshots
   defaults write com.apple.screencapture disable-shadow -bool true
 
-  # Enable subpixel font rendering on non-Apple LCDs
-  # Reference: https://github.com/kevinSuttle/macOS-Defaults/issues/17#issuecomment-266633501
-  # defaults write NSGlobalDomain AppleFontSmoothing -int 1
-
   ### endregion ######################################### Display
 
   ### region ############################################ Finder & Time Machine
 
   # Prevent Time Machine from prompting to use new hard drives as backup volume
-  defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
+  if ! $isTahoe; then
+    defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
+  elif _isMacSudo; then
+    sudo defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
+  fi
 
   # Set HOME as the default location for new Finder windows
   # For Desktop use PfDe, for Documents use PfDo, for Home use PfHm
@@ -166,15 +182,16 @@ configure_macos() {
 
   # Expand the following File Info panes:
   # “General”, “Open with”
-  defaults write com.apple.finder FXInfoPanesExpanded -dict \
-    General -bool true \
-    OpenWith -bool true
+  /usr/libexec/PlistBuddy -c "Set :FXInfoPanesExpanded:General true" ~/Library/Preferences/com.apple.finder.plist 2>/dev/null || \
+  /usr/libexec/PlistBuddy -c "Add :FXInfoPanesExpanded:General bool true" ~/Library/Preferences/com.apple.finder.plist
+  /usr/libexec/PlistBuddy -c "Set :FXInfoPanesExpanded:OpenWith true" ~/Library/Preferences/com.apple.finder.plist 2>/dev/null || \
+  /usr/libexec/PlistBuddy -c "Add :FXInfoPanesExpanded:OpenWith bool true" ~/Library/Preferences/com.apple.finder.plist
 
   # Show the Library Folder
   chflags nohidden ~/Library
 
   # Show the /Volumes folder
-  if _isMacSudo; then
+  if ! $isTahoe && _isMacSudo; then
     sudo chflags nohidden /Volumes
   fi
 
@@ -182,26 +199,19 @@ configure_macos() {
 
   ### region ############################################ Dock, Dashboard, Hot Corners
 
-  # Enable highlight hover effect for the grid view of a stack (Dock)
-  defaults write com.apple.dock mouse-over-hilite-stack -bool true
+  if ! $isGate; then
+    # Enable highlight hover effect for the grid view of a stack (Dock)
+    defaults write com.apple.dock mouse-over-hilite-stack -bool true
+
+    # Speed up Mission Control animations
+    defaults write com.apple.dock expose-animation-duration -float 0.1
+  fi
 
   # Set the icon size of Dock items to 36 pixels
   defaults write com.apple.dock tilesize -int 36
 
-  # Enable spring loading for all Dock items
-  # defaults write com.apple.dock enable-spring-load-actions-on-all-items -bool true
-
   # Show indicator lights for open applications in the Dock
   defaults write com.apple.dock show-process-indicators -bool true
-
-  # Speed up Mission Control animations
-  defaults write com.apple.dock expose-animation-duration -float 0.1
-
-  # Disable Dashboard
-  defaults write com.apple.dashboard mcx-disabled -bool true
-
-  # Don’t show Dashboard as a Space
-  defaults write com.apple.dock dashboard-in-overlay -bool true
 
   # Don’t automatically rearrange Spaces based on most recent use
   defaults write com.apple.dock mru-spaces -bool false
@@ -234,6 +244,9 @@ configure_macos() {
   # Bottom left screen corner → Start screen saver
   defaults write com.apple.dock wvous-bl-corner -int 5
   defaults write com.apple.dock wvous-bl-modifier -int 0
+  # Bottom right screen corner → Explicitly disable the default Quick Note trigger
+  defaults write com.apple.dock wvous-br-corner -int 0
+  defaults write com.apple.dock wvous-br-modifier -int 0
 
   ### endregion ######################################### Dock, Dashboard, Hot Corners
 
@@ -242,9 +255,6 @@ configure_macos() {
   # Privacy: don’t send search queries to Apple
   defaults write com.apple.Safari UniversalSearchEnabled -bool false
   defaults write com.apple.Safari SuppressSearchSuggestions -bool true
-
-  # Do not allow hitting the Backspace key to go to the previous page in history
-  defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2BackspaceKeyNavigationEnabled -bool false
 
   # Enable Safari’s debug menu
   defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
@@ -255,7 +265,7 @@ configure_macos() {
   # Enable the "Develop" menu and the Web Inspector in Safari
   defaults write com.apple.Safari IncludeDevelopMenu -bool true
   defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
-  defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
+  $isTahoe && defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
 
   # Add a context menu item for showing the Web Inspector in web views
   defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
@@ -264,52 +274,45 @@ configure_macos() {
   defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
 
   # Disable auto-playing video
-  defaults write com.apple.Safari WebKitMediaPlaybackAllowsInline -bool false
-  defaults write com.apple.SafariTechnologyPreview WebKitMediaPlaybackAllowsInline -bool false
-  defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
-  defaults write com.apple.SafariTechnologyPreview com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
-
-  # Enable “Do Not Track”
-  defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
-
-  # Update extensions automatically
-  defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true
+  defaults write com.apple.Safari WebKitPreferences.autoPlayPolicy -int 1
 
   ### endregion ######################################### Safari Tweaks
 
   ### region ############################################ Spotlight
 
-  # Disable Spotlight indexing for any volume that gets mounted and has not yet
-  # been indexed before.
+  # Spotlight Indexing Tweaks
   if _isMacSudo; then
-    sudo defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
+    if $isTahoe; then
+      sudo mdutil -a -i off
+    else
+      sudo defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
+    fi
+  fi
+
+  # Disable Cloud/Siri Web Suggestions and External Lookup tracking (Stops remote leakage)
+  defaults write com.apple.lookup.shared LookupSuggestionsDisabled -bool true
+  defaults write com.apple.Siri SuggestionsDisabled -bool true
+  defaults write com.apple.Siri SiriSuggestionsEnabled -bool false
+  defaults write com.apple.assistant.support "Assistant Enabled" -bool false
+
+  if _isMacSudo; then
+    sudo defaults write /Library/Preferences/com.apple.Spotlight SuggestionsEnabled -bool false
   fi
 
   # Change indexing order and disable some search results
   defaults write com.apple.spotlight orderedItems -array \
     '{"enabled" = 1;"name" = "APPLICATIONS";}' \
     '{"enabled" = 1;"name" = "SYSTEM_PREFS";}' \
-    '{"enabled" = 1;"name" = "BOOKMARKS";}' \
-    '{"enabled" = 1;"name" = "PDF";}' \
-    '{"enabled" = 1;"name" = "FONTS";}' \
-    '{"enabled" = 1;"name" = "DOCUMENTS";}' \
-    '{"enabled" = 1;"name" = "IMAGES";}' \
-    '{"enabled" = 1;"name" = "SPREADSHEETS";}' \
     '{"enabled" = 1;"name" = "DIRECTORIES";}' \
-    '{"enabled" = 1;"name" = "MENU_EXPRESSION";}' \
-    '{"enabled" = 1;"name" = "MENU_CONVERSION";}' \
-    '{"enabled" = 1;"name" = "MENU_DEFINITION";}' \
+    '{"enabled" = 1;"name" = "PDF";}' \
+    '{"enabled" = 1;"name" = "DOCUMENTS";}' \
     '{"enabled" = 0;"name" = "MUSIC";}' \
     '{"enabled" = 0;"name" = "MOVIES";}' \
-    '{"enabled" = 0;"name" = "PRESENTATIONS";}' \
-    '{"enabled" = 0;"name" = "SOURCE";}' \
     '{"enabled" = 0;"name" = "MESSAGES";}' \
-    '{"enabled" = 0;"name" = "CONTACT";}' \
-    '{"enabled" = 0;"name" = "EVENT_TODO";}' \
-    '{"enabled" = 0;"name" = "MENU_OTHER";}' \
-    '{"enabled" = 0;"name" = "MENU_WEBSEARCH";}' \
-    '{"enabled" = 0;"name" = "MENU_SPOTLIGHT_SUGGESTIONS";}'
+    '{"enabled" = 0;"name" = "CONTACT";}'
+
   # Load new settings before rebuilding the index
+  killall Spotlight >/dev/null
   killall mds >/dev/null 2>&1
 
   if _isMacSudo; then
