@@ -77,16 +77,16 @@ if $isEnv; then
   # Add the $LOCAL paths $PATH as needed
   newPath=""
 
-  if echo "$PATH" | grep -q "$LOCAL/bin"; then
+  if ! echo "$PATH" | grep -q "$LOCAL/bin"; then
     newPath="$LOCAL/bin:$newPath"
   fi
 
-  if echo "$PATH" | grep -q "$LOCAL/sbin"; then
+  if ! echo "$PATH" | grep -q "$LOCAL/sbin"; then
      newPath="$LOCAL/sbin:$newPath"
   fi
 
   if [ -n "$newPath" ]; then
-    echo "export PATH=\"$newPath:\$PATH\"" >> "$zshenv"
+    echo "export PATH=\"$newPath\$PATH\"" >> "$zshenv"
   fi
 
   # Make Developer Directory if not Present
