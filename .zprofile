@@ -27,7 +27,6 @@ autoload ssh-keygen
 autoload ssh-copy-id
 autoload git-config
 autoload composer
-autoload brew
 autoload brewfile
 
 # Prompt in Repos
@@ -52,6 +51,27 @@ if hash git &>/dev/null; then
 		git diff --no-index --color-words "$@";
 	}
 fi;
+
+#
+# Install Triggers
+#
+
+command_not_found_handler() {
+  if [[ "$1" == "brew" ]]; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || return $?
+        
+    # Source environment immediately after installation completes
+    if [[ -x /opt/homebrew/bin/brew ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [[ -x /usr/local/bin/brew ]]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+
+    # Execute the brew command with the remaining arguments
+    shift
+    exec brew "$@"
+  fi
+}
 
 #
 # Application Shortcuts Via Path
