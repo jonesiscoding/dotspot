@@ -1,37 +1,46 @@
 #!/usr/bin/env zsh
 
-# shellcheck source=./functions/macos.sh
-source "$HOME/.config/functions/macos.sh"
+try_sudo() {
+  id "$USER" | grep -q "(admin)"
+}
 
 try_local() {
-  local dir
+  local dir="$1"
+  local mkdir="/bin/mkdir"
+  local test="/bin/test"
 
-  dir="$1"
-
-  if [ -z "$dir" ]; then
+  if [[ -z "$dir" ]]; then
     return 1
   fi
 
+  if try_sudo; then
+    mkdir="sudo $mkdir"
+    test="sudo $test"
+  fi
+
   if [ ! -d "$1" ]; then
-    /bin/mkdir -p "$1/bin" || return 1
-    /bin/mkdir -p "$1/sbin" || return 1
+    $mkdir -p "$1/bin" || return 1
+    $mkdir -p "$1/sbin" || return 1
   fi
 
   if [ ! -d "$1/bin" ]; then
-    /bin/mkdir -p "$1/bin" || return 1
+    $mkdir -p "$1/bin" || return 1
   fi
 
   if [ ! -d "$1/sbin" ]; then
-    /bin/mkdir -p "$1/sbin" || return 1
+    $mkdir -p "$1/sbin" || return 1
   fi
 
-  [ ! -w "$1/bin" ] && return 1
-  [ ! -w "$1/sbin" ] && return 1
+  $test -w "$1/bin" || return 1
+  $test -w "$1/sbin" || return 1
 
   LOCAL="$1"
 
   return 0
 }
+
+# shellcheck source=./functions/macos.sh
+source "$HOME/.config/functions/macos.sh"
 
 ## region ###################################### Input Handling
 
