@@ -89,8 +89,6 @@ if $isEnv; then
   source "$zshenv"
 fi
 
-! $isOs || configure_macos || exit 1
-
 # Create SSH Key
 if $isSsh; then
   if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
@@ -100,6 +98,8 @@ if $isSsh; then
   eval "$(ssh-agent -s)"
   /bin/mkdir "$HOME/.ssh/config.d"
 fi
+
+! $isOs || configure_macos || exit 1
 
 echo "WARNING: You will need to open a new terminal for the settings to take effect!"
 exit 0
