@@ -1,25 +1,23 @@
 #!/usr/bin/env zsh
 
 function composer() {
-  local xCMP=$(/usr/bin/which composer)
-  if [ -z "$xCMP" ]; then
-    echo "The composer executable is not installed!"
-    exit 1
-  fi
+  if ((!${+commands[composer]})); then
+    # Run the official Composer installation via Homebrew
+    brew install composer || return $?
 
-  if $xCMP "$@"; then
-    if uname | grep "Darwin"; then
-      # Rename to avoid iCloud Sync
-      if [ -d vendor ] && [ ! -L vendor ]; then
-        mv vendor vendor.nosync
-        ln -s vendor.nosync vendor
-      fi
-      # Exclude from Time Machine
-      if ! tmutil isexcluded "${path}" | grep -Fq '[Excluded]'; then
-        tmutil addexclusion "$(pwd)/vendor.nosync"
-      fi
-      # Hide from View
-      chflags hidden vendor.nosync
+    # Re-evaluate paths immediately after installation completes
+    if [[ -x /opt/homebrew/bin/composer ]]; then
+      eval "$(/opt/homebrew/bin/composer shellenv)"
+    elif [[ -x /usr/local/bin/brew ]]; then
+      eval "$(/usr/local/bin/composer shellenv)"
     fi
   fi
+
+  composer "$@" || return $?
+
+  if ! tmutil isexcluded "$(pwd)/vendor" | grep -Fq '[Excluded]'; then
+    tmutil addexclusion "$(pwd)/vendor" || return 0
+  fi
+
+  return 0
 }
