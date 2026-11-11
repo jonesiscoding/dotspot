@@ -1,8 +1,5 @@
 # shellcheck shell=bash
 
-# shellcheck source=./functions.sh
-source "$HOME/.config/functions/functions.sh"
-
 configure_macos() {
 
   local MAC_VERSION

@@ -43,8 +43,6 @@ isEnv=false
 while [ "$1" != "" ]; do
   # Check flags
   case "$1" in
-    --brew )               isBrew=true;                   ;;
-    --brewfile )           isBrewFile=true;               ;;
     --prefs )              isOs=true;                    ;;
     --ssh )                isSsh=true;                   ;;
     --env )                isEnv=true;                   ;;
@@ -53,21 +51,7 @@ while [ "$1" != "" ]; do
 done
 
 if /usr/bin/uname -s | grep -v -q "Darwin"; then
-  isBrew=false
-  isBrewFile=false
   isOs=false
-fi
-
-if ! _isMacSudo; then
-  isBrew=false
-  isBrewFile=false
-fi
-
-if $isBrew; then
-  xBrew=$(which brew)
-  [ -f "$xBrew" ] && isBrew=false
-  $isBrew && xBrew="/opt/homebrew/bin/brew" && [ -f "$xBrew" ] && isBrew=false
-  $isBrew && xBrew="/usr/local/bin/brew" && [ -f "$xBrew" ] && isBrew=false
 fi
 
 ## endregion ################################### Input Handling
@@ -105,8 +89,6 @@ if $isEnv; then
   source "$zshenv"
 fi
 
-! $isBrew || install_brew || exit 1
-! $isBrewFile || install_brewfile || exit 1
 ! $isOs || configure_macos || exit 1
 
 # Create SSH Key
