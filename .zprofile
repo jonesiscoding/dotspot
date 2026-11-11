@@ -89,5 +89,5 @@ fi
 
 # VSCode Shortcut
 if [ -x "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" ] && [ ! -L /usr/local/bin/code ]; then
-  export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
+  export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 fi
