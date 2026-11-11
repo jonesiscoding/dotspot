@@ -1,40 +1,41 @@
 #!/usr/bin/env zsh
 
 try_sudo() {
-  id "$USER" | grep -q "(admin)"
+  id -Gn "$USER" | grep -E -q '\b(admin|sudo|wheel)\b'
 }
 
 try_local() {
   local dir="$1"
-  local mkdir="/bin/mkdir"
-  local test="/bin/test"
+  local -a mkdir=( /bin/mkdir )
+  local -a test=( /bin/test )
 
   if [[ -z "$dir" ]]; then
     return 1
   fi
 
   if try_sudo; then
-    mkdir="sudo $mkdir"
-    test="sudo $test"
+    # Prepend sudo as a distinct array element
+    mkdir=( sudo "${mkdir[@]}" )
+    test=( sudo "${test[@]}" )
   fi
 
-  if [ ! -d "$1" ]; then
-    $mkdir -p "$1/bin" || return 1
-    $mkdir -p "$1/sbin" || return 1
+  if [ ! -d "$dir" ]; then
+    $mkdir -p "$dir/bin" || return 1
+    $mkdir -p "$dir/sbin" || return 1
   fi
 
-  if [ ! -d "$1/bin" ]; then
-    $mkdir -p "$1/bin" || return 1
+  if [ ! -d "$dir/bin" ]; then
+    $mkdir -p "$dir/bin" || return 1
   fi
 
-  if [ ! -d "$1/sbin" ]; then
-    $mkdir -p "$1/sbin" || return 1
+  if [ ! -d "$dir/sbin" ]; then
+    $mkdir -p "$dir/sbin" || return 1
   fi
 
-  $test -w "$1/bin" || return 1
-  $test -w "$1/sbin" || return 1
+  $test -w "$dir/bin" || return 1
+  $test -w "$dir/sbin" || return 1
 
-  LOCAL="$1"
+  LOCAL="$dir"
 
   return 0
 }
