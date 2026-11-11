@@ -1,6 +1,5 @@
 # shellcheck shell=bash
 
-echo $BRE
 [[ -z "$BREW_BIN" ]] && [[ -f "/opt/homebrew/bin/brew" ]] && BREW_BIN="/opt/homebrew/bin/brew"
 [[ -z "$BREW_BIN" ]] && [[ -f "/usr/local/bin/brew" ]] && BREW_BIN="/usr/local/bin/brew"
 
