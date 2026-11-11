@@ -3,7 +3,6 @@
 configure_macos() {
 
   local MAC_VERSION
-  local MAC_MINOR
   local MAC_MAJOR
   local isSudo=false
 
@@ -25,7 +24,6 @@ configure_macos() {
 
   MAC_VERSION=$(sw_vers -productVersion)
   MAC_MAJOR=$(echo "$MAC_VERSION" | cut -d'.' -f1)
-  MAC_MINOR=$(echo "$MAC_VERSION" | cut -d'.' -f2)
   [[ "$MAC_MAJOR" -ge "26" ]] && isTahoe=true
   [[ "$MAC_MAJOR" -ge "27" ]] && isGate=true
 
