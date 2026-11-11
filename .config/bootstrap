@@ -96,7 +96,7 @@ if $isSsh; then
   fi
 
   eval "$(ssh-agent -s)"
-  /bin/mkdir "$HOME/.ssh/config.d"
+  /bin/mkdir -p "$HOME/.ssh/config.d"
 fi
 
 ! $isOs || configure_macos || exit 1
