@@ -5,16 +5,20 @@ configure_macos() {
   local MAC_VERSION
   local MAC_MINOR
   local MAC_MAJOR
+  local isSudo=false
 
   ### region ############################################ Prep
 
   echo "Configuring macOS defaults..."
 
+  # Set $isSudo if user is admin
+  id "$USER" | grep -q "(admin)" && isSudo=true
+
   # Close any open System Preferences panes, to prevent them from overriding
   # settings we’re about to change
   osascript -e 'tell application "System Preferences" to quit'
 
-  if _isMacSudo; then
+  if $isSudo; then
     # Keep-alive: update existing `sudo` time stamp until `configure_macos` has finished
     while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
   fi
@@ -95,7 +99,7 @@ configure_macos() {
 
   ### region ############################################ Energy Saver
 
-  if _isMacSudo; then
+  if $isSudo; then
     # Enable lid wakeup
     sudo pmset -a lidwake 1
 
@@ -114,7 +118,7 @@ configure_macos() {
   if ! $isTahoe; then
     defaults write com.apple.screensaver askForPassword -int 1
     defaults write com.apple.screensaver askForPasswordDelay -int 0
-  elif _isMacSudo; then
+  elif $isSudo; then
     sudo sysadminctl -screenLock immediate -password -
   fi
 
@@ -134,7 +138,7 @@ configure_macos() {
   # Prevent Time Machine from prompting to use new hard drives as backup volume
   if ! $isTahoe; then
     defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
-  elif _isMacSudo; then
+  elif $isSudo; then
     sudo defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
   fi
 
@@ -188,7 +192,7 @@ configure_macos() {
   chflags nohidden ~/Library
 
   # Show the /Volumes folder
-  if ! $isTahoe && _isMacSudo; then
+  if ! $isTahoe && $isSudo; then
     sudo chflags nohidden /Volumes
   fi
 
@@ -220,7 +224,7 @@ configure_macos() {
   defaults write com.apple.dock show-recents -bool false
 
   # Add iOS & Watch Simulator to Applications
-  if _isMacSudo && [ -f "/Applications/Xcode.app" ]; then
+  if $isSudo && [ -f "/Applications/Xcode.app" ]; then
     sudo ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app" "/Applications/Simulator.app"
     sudo ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator (Watch).app" "/Applications/Simulator (Watch).app"
   fi
@@ -278,7 +282,7 @@ configure_macos() {
   ### region ############################################ Spotlight
 
   # Spotlight Indexing Tweaks
-  if _isMacSudo; then
+  if $isSudo; then
     if $isTahoe; then
       sudo mdutil -a -i off
     else
@@ -292,7 +296,7 @@ configure_macos() {
   defaults write com.apple.Siri SiriSuggestionsEnabled -bool false
   defaults write com.apple.assistant.support "Assistant Enabled" -bool false
 
-  if _isMacSudo; then
+  if $isSudo; then
     sudo defaults write /Library/Preferences/com.apple.Spotlight SuggestionsEnabled -bool false
   fi
 
@@ -312,7 +316,7 @@ configure_macos() {
   killall Spotlight >/dev/null
   killall mds >/dev/null 2>&1
 
-  if _isMacSudo; then
+  if $isSudo; then
     # Make sure indexing is enabled for the main volume
     sudo mdutil -i on / >/dev/null
     # Rebuild the index from scratch
