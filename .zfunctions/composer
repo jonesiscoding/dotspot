@@ -1,11 +1,12 @@
 #!/usr/bin/env zsh
 
 function composer() {
-  local xComposer="/opt/homebrew/bin/composer"
-  if [[ ! -x "$xComposer" ]]; then
+  local xComposer
+  
+  if [[ -x /opt/homebrew/bin/composer ]]; then
     xComposer="/opt/homebrew/bin/composer"
   elif [[ -x /usr/local/bin/composer ]]; then
-    xComposer="/usrlocal/bin/composer"
+    xComposer="/usr/local/bin/composer"
   else
     # Run the official Composer installation via Homebrew
     brew install composer || return $?
