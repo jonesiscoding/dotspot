@@ -1,0 +1,9 @@
+#!/usr/bin/env zsh
+
+# @brief Installs the contents of ~/.brewfile (if present)
+if [[ -f "$HOME/.Brewfile" ]]; then
+  export BREWFILE="$HOME/.Brewfile"
+  function brewfile() {
+    brew bundle --global
+  }
+}

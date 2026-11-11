@@ -27,6 +27,8 @@ autoload ssh-keygen
 autoload ssh-copy-id
 autoload git-config
 autoload composer
+autoload brew
+autoload brewfile
 
 # Prompt in Repos
 autoload -Uz vcs_info
@@ -69,5 +71,3 @@ fi
 if [ -x "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" ] && [ ! -L /usr/local/bin/code ]; then
   export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
 fi
-
-
