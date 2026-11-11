@@ -1,22 +1,29 @@
 #!/usr/bin/env zsh
 
 function composer() {
-  if ((!${+commands[composer]})); then
+  local xComposer="/opt/homebrew/bin/composer"
+  if [[ ! -x "$xComposer" ]]; then
+    xComposer="/opt/homebrew/bin/composer"
+  elif [[ -x /usr/local/bin/composer ]]; then
+    xComposer="/usrlocal/bin/composer"
+  else
     # Run the official Composer installation via Homebrew
     brew install composer || return $?
 
     # Re-evaluate paths immediately after installation completes
     if [[ -x /opt/homebrew/bin/composer ]]; then
-      eval "$(/opt/homebrew/bin/composer shellenv)"
+      xComposer="/opt/homebrew/bin/composer"
     elif [[ -x /usr/local/bin/brew ]]; then
-      eval "$(/usr/local/bin/composer shellenv)"
+      xComposer="/usr/local/bin/brew"      
     fi
   fi
 
-  composer "$@" || return $?
+  $xComposer "$@" || return $?
 
-  if ! tmutil isexcluded "$(pwd)/vendor" | grep -Fq '[Excluded]'; then
-    tmutil addexclusion "$(pwd)/vendor" || return 0
+  if [[ -d "$(pwd)/vendor" ]]; then
+    if ! tmutil isexcluded "$(pwd)/vendor" | grep -Fq '[Excluded]'; then
+      tmutil addexclusion "$(pwd)/vendor" || return 0
+    fi
   fi
 
   return 0
