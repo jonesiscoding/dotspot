@@ -8,7 +8,7 @@ fi
 ZSHENV_FILE="$HOME/.zshenv"
 
 function configure_env() {
-  echo "${MAGENTA}Configuring environment...${RESET}"
+  echo -e "\n${MAGENTA}Configuring environment...${RESET}\n"
   # Let Bash use some of the ZSH configuration
   if [[ ! -L "$HOME/.aliases" ]]; then
     ln -s "$HOME/.zaliases" "$HOME/.aliases"
@@ -41,7 +41,7 @@ function configure_env() {
         echo "  ${RED}ERROR:${RESET} $OPT_LOCAL ${RED}exists and is not a symlink. Exiting...${RESET}"
         exit 1
       elif [[ ! -L "$OPT_LOCAL" ]]; then
-        echo -e "${YELLOW}Requesting sudo to create symlink for${RESET} $OPT_LOCAL\n"
+        echo -e "-- ${YELLOW} Requesting sudo to create symlink for${RESET} $OPT_LOCAL --\n"
         sudo ln -s "$LOCAL" "$OPT_LOCAL"
         echo ""
         _check "Link $OPT_LOCAL"

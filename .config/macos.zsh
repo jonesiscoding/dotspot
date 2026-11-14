@@ -21,7 +21,7 @@ function configure_macos() {
 
   ### region ############################################ Prep
 
-  echo "Configuring macOS defaults..."
+  echo -e "\n${MAGENTA}Configuring macOS defaults...${RESET}\n"
 
   # Set $isSudo if user is admin
   can_sudo && isSudo=true
@@ -31,7 +31,7 @@ function configure_macos() {
   osascript -e 'tell application "System Preferences" to quit'
 
   if $isSudo; then
-    echo -e "${YELLOW}Requesting sudo for select preferences...${RESET}\n"
+    ! ${isEnv:-false} && echo -e "-- ${YELLOW} Requesting sudo for select preferences${RESET} --\n"
     # Keep-alive: update existing `sudo` time stamp until `configure_macos` has finished
     while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
     echo ""
