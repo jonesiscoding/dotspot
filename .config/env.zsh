@@ -64,9 +64,10 @@ function configure_env() {
     # Append the exports
     cat >> "$ZSHENV_FILE" << EOF
 
-    # dotspot: Local Tool Directory
-    export LOCAL="$LOCAL"
-    export PATH="\$LOCAL/bin:\$LOCAL/sbin:\$PATH"
+# dotspot: Local Tool Directory
+export LOCAL="$LOCAL"
+export PATH="\$LOCAL/bin:\$LOCAL/sbin:\$PATH"
+
 EOF
     _check "Update PATH"
   fi
