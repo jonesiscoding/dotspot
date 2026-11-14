@@ -59,7 +59,7 @@ function configure_env() {
 
   # Check if the exports are already Present
   if grep -q "^export LOCAL=" "$ZSHENV_FILE" 2>/dev/null && \
-    grep -q "^export PATH=\"$LOCAL/bin:$LOCAL/sbin:\"" "$ZSHENV_FILE" 2>/dev/null;
+    grep -q "^export PATH=\"$LOCAL/bin:$LOCAL/sbin:" "$ZSHENV_FILE" 2>/dev/null;
   then
     _skip "Update PATH (Skipped)"
   else
