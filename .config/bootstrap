@@ -48,4 +48,4 @@ if $isOs; then
   configure_macos || exit $?
 fi
 
-echo "Bootstrap complete. Please restart your terminal or run 'source ~/.zprofile'."
+echo -e "\nBootstrap complete. Please restart your terminal or run 'source ~/.zprofile'.\n"

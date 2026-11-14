@@ -14,13 +14,13 @@ function configure_env() {
     ln -s "$HOME/.zaliases" "$HOME/.aliases"
     _check "Link $HOME/.aliases"
   else
-    _skip "Link $HOME/.aliases (Skipped)"
+    _skip "Link $HOME/.aliases (Exists)"
   fi
   if [[ ! -L "$HOME/.exports" ]]; then
     ln -s "$HOME/.zshenv" "$HOME/.exports"
     _check "Link $HOME/.exports"
   else
-    _skip "Link $HOME/.exports (Skipped)"
+    _skip "Link $HOME/.exports (Exists)"
   fi
 
   # Always start with ~/.local
@@ -47,6 +47,8 @@ function configure_env() {
         _check "Link $OPT_LOCAL"
         # Update LOCAL to point to the symlink target
         LOCAL="$OPT_LOCAL"
+      else
+        _skip "Link $OPT_LOCAL (Exists)"
       fi
   else
     _skip "Link $OPT_LOCAL (Skipped)"
