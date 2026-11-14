@@ -31,9 +31,10 @@ function configure_macos() {
   osascript -e 'tell application "System Preferences" to quit'
 
   if $isSudo; then
-    echo "${YELLOW}Requesting sudo for select preferences...${RESET}"
+    echo "${YELLOW}Requesting sudo for select preferences...${RESET}\n"
     # Keep-alive: update existing `sudo` time stamp until `configure_macos` has finished
     while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+    echo ""
   fi
 
   MAC_VERSION=$(sw_vers -productVersion)

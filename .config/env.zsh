@@ -31,8 +31,9 @@ function configure_env() {
         echo "  ${RED}ERROR:${RESET}$OPT_LOCAL ${RED}exists and is not a symlink. Exiting...${RESET}"
         exit 1
       elif [[ ! -L "$OPT_LOCAL" ]]; then
-        echo "${YELLOW}Requesting sudo to create symlink for${RESET} $OPT_LOCAL"
+        echo "${YELLOW}Requesting sudo to create symlink for${RESET} $OPT_LOCAL\n"
         sudo ln -s "$LOCAL" "$OPT_LOCAL"
+        echo ""
         _check "Link $OPT_LOCAL"
         # Update LOCAL to point to the symlink target
         LOCAL="$OPT_LOCAL"
