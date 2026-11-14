@@ -73,21 +73,17 @@ command_not_found_handler() {
   fi
 }
 
-#
-# Application Shortcuts Via Path
-#
-
 # PHPStorm Shortcut
-if [ -x "/Applications/PhpStorm.app/Contents/MacOS/phpstorm" ] && [ ! -L /usr/local/bin/phpstorm ]; then
-  export PATH="$PATH:/Applications/PhpStorm.app/Contents/MacOS"
+if [ -x "/Applications/PhpStorm.app/Contents/MacOS/phpstorm" ] && [ ! -L /usr/local/bin/pstorm ]; then
+  sudo ln -sf "/Applications/PhpStorm.app/Contents/MacOS/phpstorm" /usr/local/bin/pstorm
 fi
 
 # PyCharm Shortcut
 if [ -x "/Applications/PyCharm CE.app/Contents/MacOS/pycharm" ] && [ ! -L /usr/local/bin/pycharm ]; then
-  export PATH="$PATH:/Applications/PyCharm CE.app/Contents/MacOS"
+  sudo ln -sf "/Applications/PyCharm CE.app/Contents/MacOS/pycharm" /usr/local/bin/pycharm
 fi
 
 # VSCode Shortcut
 if [ -x "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" ] && [ ! -L /usr/local/bin/code ]; then
-  export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+  sudo ln -sf "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" /usr/local/bin/code
 fi
