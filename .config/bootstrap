@@ -1,52 +1,16 @@
 #!/usr/bin/env zsh
 
-try_sudo() {
-  id -Gn "$USER" | grep -E -q '\b(admin|sudo|wheel)\b'
-}
+# @brief Bootstrap script for ZSH dotfiles on macOS
+# @option --prefs Configure macOS preferences
+# @option --ssh Configure SSH
+# @option --env Configure environment variables
 
-try_local() {
-  local dir="$1"
-  local -a mkdir=( /bin/mkdir )
-  local -a test=( /bin/test )
+set -euo pipefail
 
-  if [[ -z "$dir" ]]; then
-    return 1
-  fi
+# shellcheck source=./_functions.zsh
+source "$HOME/.config/_functions.zsh"
 
-  if try_sudo; then
-    # Prepend sudo as a distinct array element
-    mkdir=( sudo "${mkdir[@]}" )
-    test=( sudo "${test[@]}" )
-  fi
-
-  if [ ! -d "$dir" ]; then
-    $mkdir -p "$dir/bin" || return 1
-    $mkdir -p "$dir/sbin" || return 1
-  fi
-
-  if [ ! -d "$dir/bin" ]; then
-    $mkdir -p "$dir/bin" || return 1
-  fi
-
-  if [ ! -d "$dir/sbin" ]; then
-    $mkdir -p "$dir/sbin" || return 1
-  fi
-
-  $test -w "$dir/bin" || return 1
-  $test -w "$dir/sbin" || return 1
-
-  LOCAL="$dir"
-
-  return 0
-}
-
-# shellcheck source=./functions/macos.sh
-source "$HOME/.config/functions/macos.sh"
-
-## region ###################################### Input Handling
-
-isBrewFile=false
-isBrew=false
+# Input Handling
 isOs=false
 isSsh=false
 isEnv=false
@@ -60,60 +24,22 @@ while [ "$1" != "" ]; do
   shift # move to next kv pair
 done
 
-if /usr/bin/uname -s | grep -v -q "Darwin"; then
-  isOs=false
-fi
-
-## endregion ################################### Input Handling
-
-## region ###################################### Environment
-
 if $isEnv; then
-  zshenv="$HOME/.zshenv"
-
-  # Determine if user has write access to /usr/local/bin
-  try_local "$LOCAL" || try_local "/usr/local" || try_local "/opt/local" || try_local "${HOME}/.local" || exit 1
-
-  # Add the $LOCAL paths $PATH as needed
-  newPath=""
-
-  if ! echo "$PATH" | grep -q "$LOCAL/bin"; then
-    newPath="$LOCAL/bin:$newPath"
-  fi
-
-  if ! echo "$PATH" | grep -q "$LOCAL/sbin"; then
-     newPath="$LOCAL/sbin:$newPath"
-  fi
-
-  if [ -n "$newPath" ]; then
-    echo "export PATH=\"$newPath\$PATH\"" >> "$zshenv"
-  fi
-
-  # Make Developer Directory if not Present
-  /bin/mkdir -p "$HOME/Developer"
-  echo "PATH_DEV=\"\${HOME}/Developer\"" >> $zshenv;
-
-  # Set Editor
-  echo "GIT_EDITOR=nano" >> "$zshenv"
-
-  # Set History File
-  echo "HISTFILE=\"\${ZDOTDIR:-\$HOME}/.zsh_history\"" >> "$zshenv"
-
-  # shellcheck disable=SC1090
-  source "$zshenv"
+  # shellcheck source=./functions/env.sh
+  source "$HOME/.config/functions/env.sh"
+  configure_env || exit $?
 fi
 
-# Create SSH Key
 if $isSsh; then
-  if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
-    /usr/bin/ssh-keygen -t ed25519
-  fi
-
-  eval "$(ssh-agent -s)"
-  /bin/mkdir -p "$HOME/.ssh/config.d"
+  # shellcheck source=./ssh.zsh
+  source "$HOME/.config/ssh.zsh"
+  configure_ssh || exit $?
 fi
 
-! $isOs || configure_macos || exit 1
+if $isOs; then
+  # shellcheck source=./macos.zsh
+  source "$HOME/.config/functions/macos.sh"
+  configure_macos || exit $?
+fi
 
-echo "WARNING: You will need to open a new terminal for the settings to take effect!"
-exit 0
+echo "Bootstrap complete. Please restart your terminal or run 'source ~/.zprofile'."

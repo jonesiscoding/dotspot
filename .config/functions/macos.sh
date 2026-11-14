@@ -1,6 +1,15 @@
-# shellcheck shell=bash
+#!/usr/bin/env zsh
 
-configure_macos() {
+# shellcheck source=./bootstrap.zsh
+function defaults-write() {
+  if defaults write "$@" > /dev/null 2>&1; then
+    _check "$1 // $2 = ${4:-$3}"
+  else
+    _cross "$1 // $2 = ${4:-$3}"
+  fi
+}
+
+function configure_macos() {
 
   local MAC_VERSION
   local MAC_MAJOR
@@ -353,3 +362,7 @@ configure_macos() {
 
   ### endregion ######################################### End Cleanup
 }
+
+if [[ ! $zsh_eval_context =~ 'file' ]]; then
+  configure_macos "$@"
+fi
