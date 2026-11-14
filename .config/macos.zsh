@@ -1,6 +1,10 @@
 #!/usr/bin/env zsh
 
-# shellcheck source=./bootstrap.zsh
+if [[ -z "$HR" ]]; then
+  # shellcheck source=./_functions.zsh
+  source $HOME/.config/_functions.zsh
+fi
+
 function defaults-write() {
   if defaults write "$@" > /dev/null 2>&1; then
     _check "$1 // $2 = ${4:-$3}"
@@ -20,7 +24,7 @@ function configure_macos() {
   echo "Configuring macOS defaults..."
 
   # Set $isSudo if user is admin
-  id "$USER" | grep -q "(admin)" && isSudo=true
+  can_sudo && isSudo=true
 
   # Close any open System Preferences panes, to prevent them from overriding
   # settings we’re about to change
