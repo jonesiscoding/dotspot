@@ -5,6 +5,11 @@
 ZSHENV_FILE="$HOME/.zshenv"
 
 function configure_env() {
+
+  # Let Bash use some of the ZSH configuration
+  ln -s "$HOME/.zaliases" "$HOME/.aliases"
+  ln -s "$HOME/.zshenv" "$HOME/.exports"
+
   # Always start with ~/.local
   LOCAL="$HOME/.local"
 
