@@ -1,8 +1,8 @@
 #!/usr/bin/env zsh
 
-if [[ -z "$HR" ]]; then
+if [[ -z "${HR:-}" ]]; then
   # shellcheck source=./_functions.zsh
-  source $HOME/.config/_functions.zsh
+  source "$HOME/.config/_functions.zsh"
 fi
 
 ZSHENV_FILE="$HOME/.zshenv"
