@@ -79,7 +79,7 @@ EOF
   if grep -q "^DEV_DIR=" "$ZSHENV_FILE" 2>/dev/null; then
     _skip "Set DEV_DIR (Skipped)"
   else
-    echo "DEV_DIR=\"\${HOME}/Developer\"" >> "$ZSHENV_FILE"
+    echo "export DEV_DIR=\"\${HOME}/Developer\"" >> "$ZSHENV_FILE"
     _check "Set DEV_DIR"
   fi
 
@@ -87,7 +87,7 @@ EOF
   if grep -q "^GIT_EDITOR=" "$ZSHENV_FILE" 2>/dev/null; then
     _skip "Set GIT_EDITOR (Skipped)"
   else
-    echo "GIT_EDITOR=nano" >> "$ZSHENV_FILE"
+    echo "export GIT_EDITOR=nano" >> "$ZSHENV_FILE"
     _check "Set GIT_EDITOR"
   fi
 
@@ -95,7 +95,7 @@ EOF
   if grep -q "^HISTFILE=" "$ZSHENV_FILE" 2>/dev/null; then
     _skip "Set HISTFILE (Skipped)"
   else
-    echo "HISTFILE=\"\${ZDOTDIR:-\$HOME}/.zsh_history\"" >> "$ZSHENV_FILE"
+    echo "export HISTFILE=\"\${ZDOTDIR:-\$HOME}/.zsh_history\"" >> "$ZSHENV_FILE"
     _check "Set HISTFILE"
   fi
 }
