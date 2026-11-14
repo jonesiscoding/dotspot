@@ -31,8 +31,8 @@ if [[ -n "$hostname" ]]; then
 fi
 
 if $isEnv; then
-  # shellcheck source=./env.sh
-  source "$HOME/.config/env.sh"
+  # shellcheck source=./env.zsh
+  source "$HOME/.config/env.zsh"
   configure_env || exit $?
 fi
 
