@@ -45,11 +45,11 @@ function configure_env() {
         sudo ln -s "$LOCAL" "$OPT_LOCAL"
         echo ""
         _check "Link $OPT_LOCAL"
-        # Update LOCAL to point to the symlink target
-        LOCAL="$OPT_LOCAL"
       else
         _skip "Link $OPT_LOCAL (Exists)"
       fi
+      # Update LOCAL to point to the symlink target
+      LOCAL="$OPT_LOCAL"
   else
     _skip "Link $OPT_LOCAL (Skipped)"
   fi
