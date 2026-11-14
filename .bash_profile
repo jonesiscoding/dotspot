@@ -24,8 +24,6 @@ fi;
 # Use ZSH Aliases (requires ZSH specific aliases to be handled correctly in .zaliases)
   # shellcheck disable=SC1091
 [[ -e ".aliases" ]] && source .aliases
-  # shellcheck disable=SC1091
-[[ -e ".aliases.local" ]] && source .aliases.local
 
 # Use ZSH Environment variables
 if [[ -e ".exports" ]]; then
@@ -34,6 +32,3 @@ if [[ -e ".exports" ]]; then
   source .exports
   set +a
 fi
-
-# shellcheck disable=SC1091
-[[ -e ".exports.local" ]] && source .exports.local
