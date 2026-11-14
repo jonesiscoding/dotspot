@@ -15,7 +15,7 @@ isOs=false
 isSsh=false
 isEnv=false
 hostname=""
-while [ "$1" != "" ]; do
+while [ "${1:-}" != "" ]; do
   # Check flags
   case "$1" in
     --prefs )              isOs=true;                    ;;
