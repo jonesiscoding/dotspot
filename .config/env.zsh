@@ -10,8 +10,18 @@ ZSHENV_FILE="$HOME/.zshenv"
 function configure_env() {
 
   # Let Bash use some of the ZSH configuration
-  ln -s "$HOME/.zaliases" "$HOME/.aliases"
-  ln -s "$HOME/.zshenv" "$HOME/.exports"
+  if [[ ! -L "$HOME/.aliases" ]]; then
+    ln -s "$HOME/.zaliases" "$HOME/.aliases"
+    _check "Link $HOME/.aliases"
+  else
+    _skip "Link $HOME/.aliases (Skipped)"
+  fi
+  if [[ ! -L "$HOME/.exports" ]]; then
+    ln -s "$HOME/.zshenv" "$HOME/.exports"
+    _check "Link $HOME/.exports"
+  else
+    _skip "Link $HOME/.exports (Skipped)"
+  fi
 
   # Always start with ~/.local
   LOCAL="$HOME/.local"
@@ -47,9 +57,9 @@ function configure_env() {
 
   # Check if the exports are already Present
   if grep -q "^export LOCAL=" "$ZSHENV_FILE" 2>/dev/null && \
-    grep -q "^export PATH=\"\$LOCAL/bin:\$LOCAL/sbin:\$PATH\"" "$ZSHENV_FILE" 2>/dev/null;
+    grep -q "^export PATH=\"$LOCAL/bin:$LOCAL/sbin:\"" "$ZSHENV_FILE" 2>/dev/null;
   then
-    _skip "Update \$PATH (Skipped)"
+    _skip "Update PATH (Skipped)"
   else
     # Append the exports
     cat >> "$ZSHENV_FILE" << EOF
@@ -58,7 +68,7 @@ function configure_env() {
     export LOCAL="$LOCAL"
     export PATH="\$LOCAL/bin:\$LOCAL/sbin:\$PATH"
 EOF
-    _check "Update \$PATH"
+    _check "Update PATH"
   fi
 
   # Make Developer Directory if not Present
