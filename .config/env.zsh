@@ -68,7 +68,7 @@ function configure_env() {
 
 # dotspot: Local Tool Directory
 export LOCAL="$LOCAL"
-export PATH="\$LOCAL/bin:\$LOCAL/sbin:\$PATH"
+export PATH="$LOCAL/bin:$LOCAL/sbin:\$PATH"
 
 EOF
     _check "Update PATH"
