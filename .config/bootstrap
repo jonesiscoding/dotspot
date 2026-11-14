@@ -31,8 +31,8 @@ if [[ -n "$hostname" ]]; then
 fi
 
 if $isEnv; then
-  # shellcheck source=./functions/env.sh
-  source "$HOME/.config/functions/env.zsh"
+  # shellcheck source=./env.sh
+  source "$HOME/.config/env.sh"
   configure_env || exit $?
 fi
 
@@ -44,7 +44,7 @@ fi
 
 if $isOs; then
   # shellcheck source=./macos.zsh
-  source "$HOME/.config/functions/macos.zsh"
+  source "$HOME/.config/macos.zsh"
   configure_macos || exit $?
 fi
 
