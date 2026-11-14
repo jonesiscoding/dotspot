@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 if [[ -z "${HR:-}" ]]; then
-  if [[ -n "$NO_COLOR" || "$TERM" =~ ^(dumb|emacs)$ || -n "$CI" ]] || ! command -v tput > /dev/null 2>&1; then
+  if [[ -n "${NO_COLOR:-}" || "$TERM" =~ ^(dumb|emacs)$ || -n "${CI:-}" ]] || ! command -v tput > /dev/null 2>&1; then
     RED="" && GREEN="" && YELLOW="" && BLUE="" && MAGENTA="" && CYAN="" && WHITE="" && RESET=""
   else
     RED=$(tput setaf 1) \
