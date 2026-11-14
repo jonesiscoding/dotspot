@@ -26,7 +26,7 @@ done
 
 if $isEnv; then
   # shellcheck source=./functions/env.sh
-  source "$HOME/.config/functions/env.sh"
+  source "$HOME/.config/functions/env.zsh"
   configure_env || exit $?
 fi
 
@@ -38,7 +38,7 @@ fi
 
 if $isOs; then
   # shellcheck source=./macos.zsh
-  source "$HOME/.config/functions/macos.sh"
+  source "$HOME/.config/functions/macos.zsh"
   configure_macos || exit $?
 fi
 
