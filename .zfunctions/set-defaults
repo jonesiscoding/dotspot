@@ -114,7 +114,7 @@ function set-defaults() {
     sudo pmset -a lidwake 1
 
     # Restart automatically on power loss
-    sudo pmset -a autorestart 
+    sudo pmset -a autorestart 1
   fi
 
   ### endregion ######################################### Energy Saver
