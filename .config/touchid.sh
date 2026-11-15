@@ -11,12 +11,12 @@ function configure_touch_sudo() {
       return 0
     fi
 
-    if ! bioutil -r -s 2>/dev/null | grep -Eq 'Touch ID functionality:[[:space:]]*1'; then
+    if ! bioutil -r -s 2>/dev/null | grep -Eq '(Touch ID|Biometrics) functionality:[[:space:]]*1'; then
       $isDebug && _cross "Enable TouchID sudo (No Sensor)"
       return 1
     fi
 
-    if ! bioutil -c 2>/dev/null | grep -Eq '[1-9][0-9]* fingerprint'; then
+    if ! bioutil -c 2>/dev/null | grep -Eq '[1-9][0-9]* (fingerprint|biometric template)'; then
       $isDebug && _cross "Enable TouchID sudo (No Fingerprint)"
       return 1
     fi
