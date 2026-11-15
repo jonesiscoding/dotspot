@@ -1,13 +1,10 @@
 #!/usr/bin/env zsh
 
-if [[ -z "${HR:-}" ]]; then
-  # shellcheck source=./_functions.zsh
-  source $HOME/.config/_functions.zsh
-fi
-
 function touchid() {
   local isDebug=false
   [[ "$1" == "--debug" ]] && isDebug=true
+
+  source $HOME/.config/_functions.zsh
 
   if can_sudo; then
     echo -e "\n${MAGENTA}Configuring TouchID for sudo...${RESET}\n"
