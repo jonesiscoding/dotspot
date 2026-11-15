@@ -3,7 +3,29 @@
 function ssh-keygen() {
   local ghAlgo ghEmail keyGithub configDir configFile
 
+  install -d "$HOME/.ssh/config.d" -m 644
+
+  if printf "%s\n" "$@" | /usr/bin/grep -q "\-\-default"; then
+    echo -e "\n${MAGENTA}Configuring Default SSH Key...${RESET}\n"
+
+    if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
+      if /usr/bin/ssh-keygen -t ed25519 -f "$HOME/.ssh/id_ed25519"; then
+        eval "$(ssh-agent -s)"
+        echo ""
+        _check "Create SSH Key (id_ed25519)"
+      else
+        _cross "Create SSH Key (id_ed25519)"
+        return 1
+      fi
+    else 
+      _skip "Create SSH Key (id_ed25519)"
+    fi
+
+    return 0
+  fi
+
   if printf "%s\n" "$@" | /usr/bin/grep -q "\-\-github"; then
+    echo -e "\n${MAGENTA}Configuring GitHub SSH Key...${RESET}\n"
     while [ "$1" != "" ]; do
       # Check flags
       case "$1" in
@@ -19,7 +41,14 @@ function ssh-keygen() {
     [ -z "$ghEmail" ] && ghEmail="$USER@$(hostname -f | awk -F '.' '{ printf("%s.%s", $(NF - 1), $NF) }')"
     [ -z "$keyGithub" ] && keyGithub="$HOME/.ssh/id_${ghAlgo}_github"
 
-    /usr/bin/ssh-keygen -t "$ghAlgo" -N '' -C "$ghEmail" -f "$keyGithub" || { >&2 echo "ERROR: Could not create '$keyGithub'" && return 1; }
+    if /usr/bin/ssh-keygen -t "$ghAlgo" -N '' -C "$ghEmail" -f "$keyGithub"; then
+      eval "$(ssh-agent -s)"
+      echo ""
+      _check "Create SSH Key (id_${ghAlgo}_github)"
+    else
+      _cross "Create SSH Key (id_${ghAlgo}_github)"
+      return 1
+    fi
 
     # Create config.github
     configDir="$HOME/.ssh/config.d"

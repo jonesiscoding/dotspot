@@ -32,10 +32,10 @@ while [ "${1:-}" != "" ]; do
   shift # move to next kv pair
 done
 
+fpath=($HOME/.zfunctions $fpath)
 ($isEnv || $isOs || [[ -n "$hostname" ]]) && $isTouchSudo=true
 $isSkipTouchSudo && isTouchSudo=false
 if $isTouchSudo; then
-  fpath=($HOME/.zfunctions $fpath)
   autoload -Uz touchid
   if $isDebug; then
     touchid --debug || exit $?
@@ -45,7 +45,6 @@ if $isTouchSudo; then
 fi
 
 if [[ -n "$hostname" ]]; then
-  fpath=($HOME/.zfunctions $fpath)
   autoload -Uz set-hostname
   set-hostname "$hostname" || exit $?
 fi
@@ -57,9 +56,8 @@ if $isEnv; then
 fi
 
 if $isSsh; then
-  # shellcheck source=./ssh.zsh
-  source "$HOME/.config/ssh.zsh"
-  configure_ssh || exit $?
+  autoload -Uz ssh-keygen
+  ssh-keygen --default || exit $?
 fi
 
 if $isOs; then
