@@ -14,10 +14,12 @@ source "$HOME/.config/_functions.zsh"
 isOs=false
 isSsh=false
 isEnv=false
+isTouchSudo=true
 hostname=""
 while [ "${1:-}" != "" ]; do
   # Check flags
   case "$1" in
+    --no-touch-sudo )      isTouchSudo=false;            ;;
     --prefs )              isOs=true;                    ;;
     --ssh )                isSsh=true;                   ;;
     --env )                isEnv=true;                   ;;
@@ -25,6 +27,12 @@ while [ "${1:-}" != "" ]; do
   esac
   shift # move to next kv pair
 done
+
+if $isTouchSudo; then
+  # shellcheck source=./touchid.sh
+  source "$HOME/.config/touchid.sh"
+  configure_touch_sudo || exit $?
+fi
 
 if [[ -n "$hostname" ]]; then
    # shellcheck source=./host.zsh

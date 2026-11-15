@@ -21,7 +21,7 @@ if [[ -z "${HR:-}" ]]; then
   declare -r RED GREEN YELLOW BLUE MAGENTA CYAN WHITE RESET CHECK CROSS HR
 fi
 
-# @briefCheck if the current user can sudo
+# @brief Check if the current user can sudo
 # @exitcode 0 user can likely use sudo
 # @exitcode 1 user cannot use sudo
 function can_sudo() {
