@@ -29,6 +29,10 @@ function can_sudo() {
     id -Gn "${USER:-$(id -un)}" | grep -Eq '\b(admin|sudo|wheel)\b'
 }
 
+function touch_sudo() {
+  grep -Eq '^[[:space:]]*auth[[:space:]]+sufficient[[:space:]]+pam_tid\.so' /etc/pam.d/sudo_local 2>/dev/null
+}
+
 function _check() {
   printf "\r\e[K${GREEN}%-1s${RESET} %s\n" "✓" "$1"
 }

@@ -15,12 +15,14 @@ isOs=false
 isSsh=false
 isEnv=false
 isDebug=false
-isTouchSudo=true
+isTouchSudo=false
+isSkipTouchSudo=false
 hostname=""
 while [ "${1:-}" != "" ]; do
   # Check flags
   case "$1" in
-    --no-touch-sudo )      isTouchSudo=false;            ;;
+    --no-touch-sudo )      isSkipTouchSudo=true;         ;;
+    --touchid )            isTouchSudo=true;             ;;
     --prefs )              isOs=true;                    ;;
     --ssh )                isSsh=true;                   ;;
     --env )                isEnv=true;                   ;;
@@ -30,6 +32,8 @@ while [ "${1:-}" != "" ]; do
   shift # move to next kv pair
 done
 
+($isEnv || $isOs || [[ -n "$hostname" ]]) && $isTouchSudo=true
+$isSkipTouchSudo && isTouchSudo=false
 if $isTouchSudo; then
   # shellcheck source=./touchid.sh
   source "$HOME/.config/touchid.sh"
