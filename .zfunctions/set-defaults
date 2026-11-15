@@ -99,10 +99,10 @@ function set-defaults() {
     defaults-write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
   else
     # Core logic required to cleanly force Three Finger Drag in modern macOS versions
-    defaults-write com.apple.AppleMultitouchTrackpad Dragging -bool false
+    defaults-write com.apple.AppleMultitouchTrackpad Dragging -bool true
     defaults-write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
+    defaults-write com.apple.driver.AppleBluetoothMultitouch.trackpad Dragging -bool true
     defaults-write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool true
-    defaults-write com.apple.universalaccess "com.apple.custommenu.apps" -array-add "com.apple.AppleMultitouchTrackpad"
   fi
 
   ### endregion ######################################### Input Devices
