@@ -114,10 +114,7 @@ function set-defaults() {
     sudo pmset -a lidwake 1
 
     # Restart automatically on power loss
-    sudo pmset -a autorestart 1
-
-    # Restart automatically if the computer freezes
-    sudo systemsetup -setrestartfreeze on
+    sudo pmset -a autorestart 
   fi
 
   ### endregion ######################################### Energy Saver
