@@ -31,13 +31,11 @@ function configure_host() {
 
   if ! grep -v '^[[:space:]]*#' /etc/hosts | grep -iwq "$hostname"; then
     _check "Update /etc/hosts ($hostname)"
-    echo "Adding $hostname to /etc/hosts..."
     printf "%s\t%s %s\n" "127.0.0.1" "$hostname" "$shortname" | sudo tee -a /etc/hosts >/dev/null
     sudo dscacheutil -flushcache
     sudo killall -HUP mDNSResponder
   else
-      _skip "Update /etc/hosts ($hostname)"
-      echo "$hostname is already present in /etc/hosts."
+    _skip "Update /etc/hosts ($hostname)"
   fi
 }
 
