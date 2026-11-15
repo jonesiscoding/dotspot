@@ -18,7 +18,7 @@ if [[ -z "${HR:-}" ]]; then
   HR="---------------------------------------------"
 
   # shellcheck disable=SC2034
-  declare -r RED GREEN YELLOW BLUE MAGENTA CYAN WHITE RESET CHECK CROSS HR
+  typeset -gr RED GREEN YELLOW BLUE MAGENTA CYAN WHITE RESET CHECK CROSS HR
 fi
 
 # @brief Check if the current user can sudo
