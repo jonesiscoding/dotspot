@@ -1,5 +1,10 @@
 #!/usr/bin/zsh
 
+if [[ -z "${HR:-}" ]]; then
+  # shellcheck source=./_functions.zsh
+  source $HOME/.config/_functions.zsh
+fi
+
 function ssh-keygen() {
   local ghAlgo ghEmail keyGithub configDir configFile
 
@@ -66,3 +71,5 @@ EOF
 
   /usr/bin/ssh-keygen "$@"
 }
+
+ssh-keygen "$@"

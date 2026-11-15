@@ -5,7 +5,7 @@ if [[ -z "${HR:-}" ]]; then
   source $HOME/.config/_functions.zsh
 fi
 
-function touchid-sudo() {
+function touchid() {
   local isDebug=false
   [[ "$1" == "--debug" ]] && isDebug=true
 
@@ -41,3 +41,5 @@ function touchid-sudo() {
   echo ""
   return 0
 }
+
+touchid "$@"

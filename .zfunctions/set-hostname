@@ -43,3 +43,5 @@ function set-hostname() {
     _skip "Update /etc/hosts ($hostname)"
   fi
 }
+
+set-hostname "$@"

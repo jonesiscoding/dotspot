@@ -376,3 +376,5 @@ function set-defaults() {
 
   ### endregion ######################################### End Cleanup
 }
+
+set-defaults "$@"
