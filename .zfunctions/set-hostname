@@ -1,6 +1,11 @@
 #!/usr/bin/env zsh
 
-function configure_host() {
+if [[ -z "${HR:-}" ]]; then
+  # shellcheck source=./_functions.zsh
+  source "$HOME/.config/_functions.zsh"
+fi
+
+function set-hostname() {
   local hostname="$1"
   local shortname domain current_hostname
 
@@ -38,7 +43,3 @@ function configure_host() {
     _skip "Update /etc/hosts ($hostname)"
   fi
 }
-
-if [[ ! $zsh_eval_context =~ 'file' ]]; then
-  configure_host "$@"
-fi

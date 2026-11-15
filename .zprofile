@@ -29,6 +29,7 @@ autoload git-config
 autoload composer
 autoload brewfile
 autoload touchid
+autoload set-hostname
 
 # Prompt in Repos
 autoload -Uz vcs_info

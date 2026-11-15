@@ -45,9 +45,9 @@ if $isTouchSudo; then
 fi
 
 if [[ -n "$hostname" ]]; then
-   # shellcheck source=./host.zsh
-  source "$HOME/.config/host.zsh"
-  configure_host "$hostname" || exit $?
+  fpath=($HOME/.zfunctions $fpath)
+  autoload -Uz set-hostname
+  set-hostname "$hostname" || exit $?
 fi
 
 if $isEnv; then
