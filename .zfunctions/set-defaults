@@ -1,9 +1,6 @@
 #!/usr/bin/env zsh
 
-if [[ -z "${HR:-}" ]]; then
-  # shellcheck source=./_functions.zsh
-  source "$HOME/.config/_functions.zsh"
-fi
+[[ -z "${HR:-}" ]] && source "$HOME/.config/_functions.zsh"
 
 function defaults-write() {
   if defaults write "$@" > /dev/null 2>&1; then
