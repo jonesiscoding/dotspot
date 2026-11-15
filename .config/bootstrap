@@ -59,9 +59,8 @@ if $isSsh; then
 fi
 
 if $isOs; then
-  # shellcheck source=./macos.zsh
-  source "$HOME/.config/macos.zsh"
-  configure_macos || exit $?
+  autoload -Uz set-defaults
+  set-defaults || exit $?
 fi
 
 echo -e "\nBootstrap complete. Please restart your terminal or run 'source ~/.zprofile'.\n"

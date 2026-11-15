@@ -30,6 +30,7 @@ autoload composer
 autoload brewfile
 autoload touchid
 autoload set-hostname
+autoload set-defaults
 
 # Prompt in Repos
 autoload -Uz vcs_info
