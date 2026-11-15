@@ -29,6 +29,13 @@ function can_sudo() {
     id -Gn "${USER:-$(id -un)}" | grep -Eq '\b(admin|sudo|wheel)\b'
 }
 
+# @brief Check if the current system has Touch ID sensor available
+# @exitcode 0 Touch ID sensor is available
+# @exitcode 1 Touch ID sensor is not available
+function can_touchid() {
+  bioutil -r -s 2>/dev/null | grep -Eq '(Touch ID|Biometrics) functionality:[[:space:]]*1'
+}
+
 function touch_sudo() {
   grep -Eq '^[[:space:]]*auth[[:space:]]+sufficient[[:space:]]+pam_tid\.so' /etc/pam.d/sudo_local 2>/dev/null
 }

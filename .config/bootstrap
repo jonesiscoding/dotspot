@@ -1,9 +1,9 @@
 #!/usr/bin/env zsh
 
 # @brief Bootstrap script for ZSH dotfiles on macOS
-# @option --prefs Configure macOS preferences
-# @option --ssh Configure SSH
-# @option --env Configure environment variables
+# @option --skip-defaults Skip macOS preferences
+# @option --skip-ssh Skip SSH
+# @option --skip-env Skip Environment Config
 
 set -euo pipefail
 
@@ -11,21 +11,20 @@ set -euo pipefail
 source "$HOME/.config/_functions.zsh"
 
 # Input Handling
-isOs=false
-isSsh=false
-isEnv=false
+isOs=true
+isSsh=true
+isEnv=true
 isDebug=false
-isTouchSudo=false
+isTouchSudo=true
 isSkipTouchSudo=false
 hostname=""
 while [ "${1:-}" != "" ]; do
   # Check flags
   case "$1" in
-    --no-touch-sudo )      isSkipTouchSudo=true;         ;;
-    --touchid )            isTouchSudo=true;             ;;
-    --prefs )              isOs=true;                    ;;
-    --ssh )                isSsh=true;                   ;;
-    --env )                isEnv=true;                   ;;
+    --skip-touchid )       isTouchSudo=false;            ;;
+    --skip-defaults )      isOs=false;                   ;;
+    --skip-ssh )           isSsh=false;                  ;;
+    --skip-env )           isEnv=false;                  ;;
     --debug )              isDebug=true;                 ;;
     --hostname )           hostname="$2"; shift;         ;;
   esac
@@ -33,8 +32,7 @@ while [ "${1:-}" != "" ]; do
 done
 
 fpath=($HOME/.zfunctions $fpath)
-($isEnv || $isOs || [[ -n "$hostname" ]]) && $isTouchSudo=true
-$isSkipTouchSudo && isTouchSudo=false
+! can_touchid && isTouchSudo=false
 if $isTouchSudo; then
   autoload -Uz touchid
   if $isDebug; then
