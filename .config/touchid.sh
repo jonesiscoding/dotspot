@@ -6,6 +6,7 @@ function touch_sudo() {
 
 function configure_touch_sudo() {
   if can_sudo; then
+    echo -e "\n${MAGENTA}Configuring TouchID for sudo...${RESET}\n"
     if touch_sudo; then
       _skip "Enable TouchID sudo (Enabled)"
       return 0
