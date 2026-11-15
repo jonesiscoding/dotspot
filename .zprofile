@@ -28,7 +28,7 @@ autoload ssh-copy-id
 autoload git-config
 autoload composer
 autoload brewfile
-autoload touchid-sudo
+autoload touchid
 
 # Prompt in Repos
 autoload -Uz vcs_info

@@ -22,7 +22,8 @@ function touchid-sudo() {
     fi
 
     if ! bioutil -c 2>/dev/null | grep -Eq '[1-9][0-9]* (fingerprint|biometric template)'; then
-      $isDebug && _cross "Enable TouchID sudo (No Fingerprint)"
+      _cross "Enable TouchID sudo (No Fingerprint)"
+      open "x-apple.systempreferences:com.apple.Touch-ID-Settings.extension"
       return 1
     fi
     
@@ -37,5 +38,6 @@ function touchid-sudo() {
     $isDebug && _cross "Enable TouchID sudo (No Rights)"
   fi
 
+  echo ""
   return 0
 }

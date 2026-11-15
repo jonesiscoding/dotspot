@@ -35,9 +35,13 @@ done
 ($isEnv || $isOs || [[ -n "$hostname" ]]) && $isTouchSudo=true
 $isSkipTouchSudo && isTouchSudo=false
 if $isTouchSudo; then
-  # shellcheck source=./touchid.sh
-  source "$HOME/.config/touchid.sh"
-  configure_touch_sudo || exit $?
+  fpath=($HOME/.zfunctions $fpath)
+  autoload -Uz touchid
+  if $isDebug; then
+    touchid --debug || exit $?
+  else
+    touchid || exit $?
+  fi
 fi
 
 if [[ -n "$hostname" ]]; then
